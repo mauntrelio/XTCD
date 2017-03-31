@@ -1,0 +1,14 @@
+{
+  "SERVER_ADDRESS": "0.0.0.0",
+  "SERVER_PORT": 8800,
+  "SERVER_MULTITHREADED": true,
+  "STATIC_URL_PREFIX": "/static",
+  "STATIC_FOLDER": "/var/scripts/servo/static",
+  "STATIC_CACHE" : 604800,
+  "ROUTE": {
+    "GET": {
+      "/": "default_response"
+    }
+  },
+  "SERIAL_PORT": "/dev/ttyACM0"
+}

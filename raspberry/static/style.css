@@ -1,0 +1,38 @@
+body {
+	font-family: 'Lato', sans-serif;
+}
+
+div.button {
+	font-size: 50px;
+	display: inline-block;
+	cursor: pointer;
+	width: 70px;
+	height: 70px;
+	padding: 10px;
+	margin: 0;
+	border: 1px solid gray;
+}
+
+div.button:hover {
+	color: red;
+	box-shadow: 5px 5px 10px #888;
+}
+
+div.selected {
+	color: green;
+	text-shadow: 2px 2px 5px #888;
+}
+
+div.message {
+	margin-top: 20px;
+}
+
+#container {
+	width: 50%;
+	height: 50%;
+	min-height: 150px;
+	text-align: center;
+	margin: auto;
+	position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
