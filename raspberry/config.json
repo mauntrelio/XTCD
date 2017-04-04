@@ -3,12 +3,15 @@
   "SERVER_PORT": 8800,
   "SERVER_MULTITHREADED": true,
   "STATIC_URL_PREFIX": "/static",
-  "STATIC_FOLDER": "/var/scripts/servo/static",
+  "STATIC_FOLDER": "/var/camera_control/raspberry/static",
   "STATIC_CACHE" : 604800,
   "ROUTE": {
     "GET": {
       "/": "default_response"
     }
   },
-  "SERIAL_PORT": "/dev/ttyACM0"
+  "SERVO_FREQ": 60,
+  "SERVO_MIN": 150,
+  "SERVO_MAX": 600,
+  "SERVO_CHANNEL": 0
 }

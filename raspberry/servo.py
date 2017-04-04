@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from RPiHTTPServer import RPiHTTPServer, RPiHTTPRequestHandler
-import serial
+import Adafruit_PCA9685
 import os
 import time
 import re
@@ -22,11 +22,13 @@ class ServoHandler(RPiHTTPRequestHandler):
       pos = self.qs['pos'][0]
       # only if param is one of the possible values
       if pos in self.server.positions.keys():
-        # send data to Arduino
-        command = self.server.positions[pos]
-        self.server.serial.write(command)
+        # send data to pwm controller
+        pwm_set = self.server.positions[pos]
+        self.server.pwm.set_pwm(self.server.config.SERVO_CHANNEL, 0, pwm_set)
+        self.server.pwm.set_pwm(self.server.config.SERVO_CHANNEL+1, 0, pwm_set)
+        self.server.pwm.set_pwm(self.server.config.SERVO_CHANNEL+2, 0, pwm_set)
         # set template vars for GUI
-        tpl_vars['{{message}}'] = "Sending %s to Arduino" % command
+        tpl_vars['{{message}}'] = "Setting PWM to %s" % pwm_set
         tpl_vars["{{selected%s}}" % pos] = "selected"
 
     print tpl_vars['{{message}}']
@@ -43,12 +45,6 @@ class ServoHandler(RPiHTTPRequestHandler):
 
 def main():
 
-  positions = {
-    "000": "L",
-    "090": "U",
-    "180": "R"
-  }
-
   # read configuration from json
   basedir = os.path.dirname(os.path.abspath(__file__))
   config_file = os.path.join(basedir,"config.json")
@@ -59,18 +55,18 @@ def main():
   # quick access to config params
   config = SwitchServer.server.config
 
-  # set serial
-  ser = serial.Serial(
-               port = config.SERIAL_PORT, \
-               baudrate = 9600, \
-               parity=serial.PARITY_NONE, \
-               stopbits=serial.STOPBITS_ONE, \
-               bytesize=serial.EIGHTBITS, \
-               timeout=1
-           )
+  # instantiate and initialise pwm controller
+  pwm = Adafruit_PCA9685.PCA9685(address=0x41)
+  pwm.set_pwm_freq(config.SERVO_FREQ)
+  positions = {
+    "000": config.SERVO_MIN,
+    "090": (config.SERVO_MAX + config.SERVO_MIN)/2,
+    "180": config.SERVO_MAX
+  }
+
 
   # assign variables to server
-  SwitchServer.server.serial = ser
+  SwitchServer.server.pwm = pwm
   SwitchServer.server.positions = positions
   SwitchServer.server.root_folder = basedir
 
