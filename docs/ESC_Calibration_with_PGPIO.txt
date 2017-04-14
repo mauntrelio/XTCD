@@ -1,0 +1,27 @@
+ESC Calibration with PGPIO
+
+http://abyz.co.uk/rpi/pigpio/
+
+import pigpio
+
+# Connect to pigpio
+pi = pigpio.pi() 
+
+# Calibrate ESC
+ESC_GPIO = 13
+pi.set_servo_pulsewidth(ESC_GPIO, 2000) # Maximum throttle.
+sleep(2)
+pi.set_servo_pulsewidth(ESC_GPIO, 1000) # Minimum throttle.
+sleep(2)
+
+
+# Left shift speed then OR by negated pin value
+speed = (speed << 1) | (1 ^ GPIO.input(pin))
+
+# Set ESC speed via PWM
+pi.set_servo_pulsewidth(ESC_GPIO, speed * 1000 / 7 + 1000)
+
+pi.set_servo_pulsewidth(ESC_GPIO, 0) # Stop servo pulses.
+pi.stop() # Disconnect pigpio.
+
+WARNING:  the ESC will retain calibration until it is disconnected from the power supply.  If you run the above calibration code on an ESC that has already been calibrated, the motor will spin up to high speed for 2 seconds.  Please note that calibration is required for the ESC to operate
