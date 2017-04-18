@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>PCA9685 RPi web interface</title>
+		<link rel="stylesheet" href="static/css/style.css">
+	</head>
+	<body>
+
+		<form>
+			<label for="freq">Frequency</label>
+			<input type="range" id="freq" name="freq" value="{{freq}}">
+			<input type="button" value="Set" id="set_freq"> 
+
+			<table>
+				<tr>
+					<th>Channel</th>
+					<th>Start</th>
+					<th>End</th>
+					<th>Pulse</th>
+					<th></th>
+				</tr>
+
+				{{#channels}}
+					<tr id="pwm_{{index}}">
+						<td>PWM #{{index}}</td>
+						<td><input name="channel_{{index}}_start" value="{{start}}" type="range"></td>
+						<td><input name="channel_{{index}}_end" value="{{end}}" type="range"></td>
+						<td id="pulse_{{index}}"></td>
+						<td><input type="button" value="Set" data-index="{{index}}" class="set_pwm"></td>
+					</tr>
+				{{/channels}}
+
+			</table>
+
+			<input type="button" value="Set all!" id="set_all">
+
+		</form>
+
+		<script language="static/js/jQuery.js"></script>
+		<script language="static/js/pca9685.js"></script>
+	</body>
+
+</html>

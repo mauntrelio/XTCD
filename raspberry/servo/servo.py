@@ -27,6 +27,7 @@ class ServoHandler(RPiHTTPRequestHandler):
         self.server.pwm.set_pwm(self.server.config.SERVO_CHANNEL, 0, pwm_set)
         self.server.pwm.set_pwm(self.server.config.SERVO_CHANNEL+1, 0, pwm_set)
         self.server.pwm.set_pwm(self.server.config.SERVO_CHANNEL+2, 0, pwm_set)
+        # self.server.pwm.set_all_pwm(0, pwm_set)
         # set template vars for GUI
         tpl_vars['{{message}}'] = "Setting PWM to %s" % pwm_set
         tpl_vars["{{selected%s}}" % pos] = "selected"
