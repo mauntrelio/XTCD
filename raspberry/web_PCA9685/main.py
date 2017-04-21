@@ -2,12 +2,13 @@
 
 # -*- coding: utf-8 -*-
 from RPiHTTPServer import RPiHTTPServer, RPiHTTPRequestHandler
-import Adafruit_PCA9685 as PCA9685
+# import Adafruit_PCA9685 as pca9685
+from pca9685 import pca9685
 import pystache
+import os
 
 class WebHandler(RPiHTTPRequestHandler):
-  
-  
+
   status = {
     "freq": 0,
     "channels": [
@@ -36,10 +37,10 @@ class WebHandler(RPiHTTPRequestHandler):
 
   # POST /set
   def set_param(self):
-    # TODO: 
+    # TODO:
     # - handle errors / illegal params
     # - directly interface to i2C to have more control (set all, setup, off / on, etc..)
-    
+
     # set freq
     if 'freq' in self.form:
       freq = int(self.form['freq'])
@@ -50,40 +51,37 @@ class WebHandler(RPiHTTPRequestHandler):
     # set start and end for pwm channels
     for i in xrange(16):
       ch_start = ch_end = 0
-      
+
       if "channel_%s_start" % i in self.form:
         ch_start = int(self.form["channel_%s_start" % i])
         if ch_start >= 0 and ch_start <= 4095:
-          self.status["channels"][i]["start"] = ch_start  
-      
+          self.status["channels"][i]["start"] = ch_start
+
       if "channel_%s_end" % i in self.form:
         ch_end = int(self.form["channel_%s_end" % i])
         if ch_end >= 0 and ch_end <= 4095:
-          ch_end = ch_start if ch_end < ch_start
-          self.status["channels"][i]["end"] = ch_end  
+          if ch_end < ch_start:
+            ch_end = ch_start
+          self.status["channels"][i]["end"] = ch_end
 
       server.pwm.set_pwm(i, self.status["channels"][i]["start"], self.status["channels"][i]["end"])
 
     self.render_template()
-        
-  def render_template(self,template="home.html",tpl_vars=self.status):
-    if self.request_xhr: 
+
+  def render_template(self,template="home.html",tpl_vars={}):
+    if not tpl_vars:
+      tpl_vars = self.status
+
+    if self.request_xhr:
       self.content_type = "application/json"
       self.content = json.dumps(tpl_vars)
-    else: 
+    else:
       tpl = os.path.join(self.config.TEMPLATE_FOLDER, template)
       if os.path.isfile(tpl):
         tpl_content = open(tpl,"r").read()
         self.content = pystache.render(tpl_content, tpl_vars)
       else:
         self.give_404("Template %s missing" % template)
-
-    # TODO: this should be a general method of RPiHTTPRequestHandler
-    tpl = os.path.join(self.server.root_folder, tpl)
-    tpl_content = open(tpl,"r").read()
-    pattern = re.compile('|'.join(tpl_vars.keys()))
-    self.content = pattern.sub(lambda x: tpl_vars[x.group()], tpl_content)
-
 
 
 def main():
@@ -99,7 +97,7 @@ def main():
   config = WebServer.server.config
 
   # instantiate and initialise pwm controller
-  pwm = Adafruit_PCA9685.PCA9685(address=config.I2C_ADDR)
+  pwm = pca9685(address=config.I2C_ADDR)
 
   # assign variables to server
   WebServer.server.pwm = pwm
