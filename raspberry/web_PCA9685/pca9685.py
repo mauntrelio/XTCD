@@ -26,6 +26,8 @@ class pca9685:
       {"start":0, "end": 0}
       ]
 
+    print "pca9685 initialized on address %s" % address
+
   def set_pwm_freq(self,freq):
     self.freq = freq
     print "PWM frequency set at %s" % freq

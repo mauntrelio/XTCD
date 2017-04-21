@@ -4,20 +4,23 @@
     <title>PCA9685 RPi web interface</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="static/css/bootstrap-theme.min.css">
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <link rel="stylesheet" href="static/css/style.css">
 
   </head>
   <body>
+    <div class="container">
+
+    <h1>PCA9685 RPi web interface</h1>
 
     <form>
-      <label for="freq">Frequency</label>
-      <input type="range" id="freq" name="freq" value="{{freq}}">
-      <input type="button" value="Set" id="set_freq">
 
-      <table>
+      <label for="freq">Frequency</label>
+      <input type="range" id="freq" name="freq" value="{{freq}}" min="25" max="250" step="5">
+      <span>50</span>Hz
+      <input type="button" class="btn btn-primary" value="Set" id="set_freq">
+
+      <table class="table table-striped">
         <tr>
           <th>Channel</th>
           <th>Start</th>
@@ -29,16 +32,28 @@
         {{#channels}}
           <tr id="pwm_{{index}}">
             <td>PWM #{{index}}</td>
-            <td><input name="channel_{{index}}_start" value="{{start}}" type="range"></td>
-            <td><input name="channel_{{index}}_end" value="{{end}}" type="range"></td>
+            <td>
+              <input id="channel_{{index}}_start" class="start"
+              data-index="{{index}}" name="channel_{{index}}_start"
+              type="range" min="0" max="4096" value="{{start}}"/>
+              <span>{{start}}</span>
+            </td>
+            <td>
+              <input id="channel_{{index}}_end" class="end"
+              data-index="{{index}}" name="channel_{{index}}_end"
+              type="range" min="0" max="4096" value="{{end}}"/>
+              <span>{{end}}</span>
+            </td>
             <td id="pulse_{{index}}"></td>
-            <td><input type="button" value="Set" data-index="{{index}}" class="set_pwm"></td>
+            <td><input type="button" value="Set"
+              data-index="{{index}}" class="btn btn-primary set_pwm">
+            </td>
           </tr>
         {{/channels}}
 
       </table>
 
-      <input type="button" value="Set all!" id="set_all">
+      <input type="button" value="Set all!" class="btn btn-primary" id="set_all">
 
     </form>
 
@@ -46,6 +61,9 @@
     <script src="static/js/bootstrap.min.js"></script>
     <script src="static/js/pca9685.js"></script>
     <script src="static/js/app.js"></script>
+
+    </div>
+
   </body>
 
 </html>

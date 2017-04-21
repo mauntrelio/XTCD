@@ -10,19 +10,19 @@ import os
 class WebHandler(RPiHTTPRequestHandler):
 
   status = {
-    "freq": 0,
+    "freq": 50,
     "channels": [
       {"index":  0, "start": 0, "end": 0},
       {"index":  1, "start": 0, "end": 0},
       {"index":  2, "start": 0, "end": 0},
       {"index":  3, "start": 0, "end": 0},
-      {"index":  4, "start": 0, "end": 0},
+      {"index":  4, "start": 100, "end": 300},
       {"index":  5, "start": 0, "end": 0},
       {"index":  6, "start": 0, "end": 0},
       {"index":  7, "start": 0, "end": 0},
       {"index":  8, "start": 0, "end": 0},
       {"index":  9, "start": 0, "end": 0},
-      {"index": 10, "start": 0, "end": 0},
+      {"index": 10, "start": 50, "end": 1000},
       {"index": 11, "start": 0, "end": 0},
       {"index": 12, "start": 0, "end": 0},
       {"index": 13, "start": 0, "end": 0},
