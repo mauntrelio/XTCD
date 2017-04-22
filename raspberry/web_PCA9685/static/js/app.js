@@ -1,5 +1,7 @@
 var App = (function($,window,document,undefined){
 
+  "use strict";
+
   var App = {};
 
   App.init = function(){
@@ -13,4 +15,6 @@ var App = (function($,window,document,undefined){
 }(jQuery,window,document));
 
 
-App.init();
+$(function(){
+  App.init();
+})

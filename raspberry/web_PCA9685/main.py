@@ -108,6 +108,7 @@ def main():
     WebServer.serve_forever()
   except KeyboardInterrupt:
     pass
+    # TODO: cleanup pwm status
     WebServer.server.server_close()
 
 

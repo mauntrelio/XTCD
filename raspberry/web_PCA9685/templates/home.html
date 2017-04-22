@@ -10,17 +10,22 @@
   </head>
   <body>
     <div class="container">
+    <div class="row">
 
     <h1>PCA9685 RPi web interface</h1>
 
-    <form>
+    <form class="form-inline">
 
-      <label for="freq">Frequency</label>
-      <input type="range" id="freq" name="freq" value="{{freq}}" min="25" max="250" step="5">
-      <span>50</span>Hz
-      <input type="button" class="btn btn-primary" value="Set" id="set_freq">
+      <div class="form-group">
+        <label for="freq">Frequency</label>
+        <input type="range" id="freq" name="freq" value="{{freq}}" min="25" max="250" step="5" class="form-control">
+        <div class="range-value"><span>50</span>Hz</div>
+        <input type="button" class="btn btn-primary btn-sm" value="Set" id="set_freq">
+      </div>
 
-      <table class="table table-striped">
+      <br><br>
+
+      <table class="table table-striped table-condensed">
         <tr>
           <th>Channel</th>
           <th>Start</th>
@@ -33,37 +38,38 @@
           <tr id="pwm_{{index}}">
             <td>PWM #{{index}}</td>
             <td>
-              <input id="channel_{{index}}_start" class="start"
+              <input id="channel_{{index}}_start" class="pwm start form-control"
               data-index="{{index}}" name="channel_{{index}}_start"
               type="range" min="0" max="4096" value="{{start}}"/>
-              <span>{{start}}</span>
+              <div class="range-value"><span>{{start}}</span></div>
             </td>
             <td>
-              <input id="channel_{{index}}_end" class="end"
+              <input id="channel_{{index}}_end" class="pwm end form-control"
               data-index="{{index}}" name="channel_{{index}}_end"
               type="range" min="0" max="4096" value="{{end}}"/>
-              <span>{{end}}</span>
+              <div class="range-value"><span>{{end}}</span></div>
             </td>
             <td id="pulse_{{index}}"></td>
             <td><input type="button" value="Set"
-              data-index="{{index}}" class="btn btn-primary set_pwm">
+              data-index="{{index}}" class="btn btn-primary btn-sm set_pwm">
             </td>
           </tr>
         {{/channels}}
 
       </table>
 
-      <input type="button" value="Set all!" class="btn btn-primary" id="set_all">
+      <input type="button" value="Set all!" class="btn btn-primary btn-sm" id="set_all">
 
     </form>
 
+  </div>
+  </div>
+
     <script src="static/js/jquery-3.2.1.min.js"></script>
     <script src="static/js/bootstrap.min.js"></script>
+    <script src="static/js/utils.js"></script>
     <script src="static/js/pca9685.js"></script>
     <script src="static/js/app.js"></script>
 
-    </div>
-
   </body>
-
 </html>
