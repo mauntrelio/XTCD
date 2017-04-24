@@ -1,5 +1,7 @@
 
 /*@import url('range.css');*/
+@import url('fonts.css');
+@import url('flash.css');
 @import url('bootstrap.min.css');
 @import url('bootstrap-theme.min.css');
 
@@ -15,10 +17,5 @@ div.range-value {
 }
 
 #freq {
-  margin-left: 10px;
+  margin: 0 10px;
 }
-
-/*input.form-control[type=range] {
-  border: none;
-  background: transparent;
-}*/
