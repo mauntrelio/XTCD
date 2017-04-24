@@ -2,6 +2,7 @@
 *.py[cod]
 .buildinfo
 .idea/*
+*/.idea
 dist
 build
 *.egg-info

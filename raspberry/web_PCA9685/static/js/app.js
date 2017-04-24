@@ -12,7 +12,7 @@ var App = (function($,window,document,undefined){
     }
 
     // add a flash() method to jQuery
-    $.fn.flash =  function(highlightcolor) {
+    $.fn.flash =  function() {
       var $this = this;
       $this.addClass("flash");
       setTimeout( function(){
@@ -22,6 +22,7 @@ var App = (function($,window,document,undefined){
 
   };
 
+  // add a round method with number of decimals
   App.round = function(number, precision) {
     var factor = Math.pow(10, precision);
     var tempNumber = number * factor;

@@ -11,16 +11,17 @@ import json
 
 class WebHandler(RPiHTTPRequestHandler):
 
+  # TODO: status should be set directly from interface to i2C
   status = {
     "freq": 50,
     "channels": [
       {"index":  0, "start": 0, "end": 0, "pulse": 0},
       {"index":  1, "start": 0, "end": 0, "pulse": 0},
       {"index":  2, "start": 0, "end": 0, "pulse": 0},
-      {"index":  3, "start": 1000, "end": 3000, "pulse": 0},
+      {"index":  3, "start": 0, "end": 0, "pulse": 0},
       {"index":  4, "start": 0, "end": 0, "pulse": 0},
       {"index":  5, "start": 0, "end": 0, "pulse": 0},
-      {"index":  6, "start": 50, "end": 1000, "pulse": 0},
+      {"index":  6, "start": 0, "end": 0, "pulse": 0},
       {"index":  7, "start": 0, "end": 0, "pulse": 0},
       {"index":  8, "start": 0, "end": 0, "pulse": 0},
       {"index":  9, "start": 0, "end": 0, "pulse": 0},
@@ -54,7 +55,7 @@ class WebHandler(RPiHTTPRequestHandler):
     # set freq
     if self.form.has_key('freq'):
       freq = int(self.form['freq'].value)
-      if freq >= 10 and freq <= 250:
+      if 10 <= freq <= 250:
         self.status["freq"] = freq
         self.server.pwm.set_pwm_freq(freq)
 
@@ -64,12 +65,12 @@ class WebHandler(RPiHTTPRequestHandler):
 
       if self.form.has_key("channel_%s_start" % i):
         ch_start = int(self.form["channel_%s_start" % i].value)
-        if ch_start >= 0 and ch_start <= 4095:
+        if 0 <= ch_start <= 4095:
           self.status["channels"][i]["start"] = ch_start
 
       if self.form.has_key("channel_%s_end" % i):
         ch_end = int(self.form["channel_%s_end" % i].value)
-        if ch_end >= 0 and ch_end <= 4095:
+        if 0 <= ch_end <= 4095:
           if ch_end < ch_start:
             ch_end = ch_start
           self.status["channels"][i]["end"] = ch_end
@@ -79,7 +80,7 @@ class WebHandler(RPiHTTPRequestHandler):
     self.compute_pulses()
     self.render_template()
 
-  def render_template(self,template="home.html",tpl_vars={}):
+  def render_template(self, template="home.html", tpl_vars={}):
     if not tpl_vars:
       tpl_vars = self.status
 

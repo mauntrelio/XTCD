@@ -9,8 +9,8 @@ var PCA9685 = (function($,window,document,undefined) {
   var update_pulse = function(index, start, end) {
     var freq = parseInt($("#freq").val());
     var length = Math.abs(start - end);
-    var pulse_lenght = App.round(length / (4096 * freq ) * 1000, 2);
-    $("#pulse_" + index).html(pulse_lenght + " ms");
+    var pulse_length = App.round(length / (4096 * freq ) * 1000, 2);
+    $("#pulse_" + index).html(pulse_length + " ms");
   };
 
   var bind_ranges = function() {
