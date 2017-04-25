@@ -57,7 +57,7 @@ def main():
   config = SwitchServer.server.config
 
   # instantiate and initialise pwm controller
-  pwm = Adafruit_PCA9685.PCA9685(address=0x41)
+  pwm = Adafruit_PCA9685.PCA9685(address=int(config.I2C_ADDR,16))
   pwm.set_pwm_freq(config.SERVO_FREQ)
   positions = {
     "000": config.SERVO_MIN,
