@@ -1,0 +1,34 @@
+
+/*@import url('range.css');*/
+@import url('fonts.css');
+@import url('flash.css');
+@import url('bootstrap.min.css');
+@import url('bootstrap-theme.min.css');
+
+* {
+  font-family: 'Lato', sans-serif;
+}
+
+div.range-value {
+  font-size: 12px;
+  text-align: right;
+  display: inline-block;
+  width: 35px;
+}
+
+#video {
+  width: 100%;
+  max-width: 1024px;
+  max-height: 768px;
+}
+
+table.view-controls td, table.motion-controls td  {
+  padding: 3px;
+  text-align: center;
+}
+
+table.view-controls th, table.motion-controls th {
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid silver;
+}

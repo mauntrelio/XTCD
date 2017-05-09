@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>XTD Camera drone</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/css/style.css">
+
+  </head>
+  <body>
+    <div class="container-fluid">
+    <div class="row">
+      <div class="col-xs-12">
+        <img id="video" src="{{CAMERA_URL}}">
+      </div>
+      <!--<div class="col-md-4">
+        <form id="camera-control">
+          <input type="button" value="Fullscreen" class="btn btn-primary btn-sm camera-control" data-command="fullscreen">
+          <input type="button" value="Take picture" class="btn btn-primary btn-sm drone-control" data-command="picture">
+          <input type="button" value="Camera settings..." class="btn btn-primary btn-sm camera-control" data-command="settings">
+        </form>
+      </div>-->
+    </div>
+
+
+    <div class="row">
+
+      <form id="drone-control">
+
+      <div class="col-xs-6">
+        <table class="view-controls">
+          <tr>
+            <th colspan="3">View</th>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <button type="button" class="btn btn-primary btn-sm drone-control" data-command="up" data-keys="ArrowUp,Numpad8">
+                 <span class="glyphicon glyphicon-arrow-up"></span>
+              </button>
+            </td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>
+              <button type="button" class="btn btn-primary btn-sm drone-control" data-command="left" data-keys="ArrowLeft,Numpad4">
+                <span class="glyphicon glyphicon-arrow-left"></span>
+              </button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-success btn-sm drone-control" data-command="center" data-keys="Numpad5,c,C">
+                <span class="glyphicon glyphicon-record"></span>
+              </button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-primary btn-sm drone-control" data-command="right" data-keys="ArrowRight,Numpad6">
+                <span class="glyphicon glyphicon-arrow-right"></span>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <button type="button" class="btn btn-primary btn-sm drone-control" data-command="down" data-keys="ArrowDown,Numpad2">
+                <span class="glyphicon glyphicon-arrow-down"></span>
+              </button>
+            </td>
+            <td></td>
+          </tr>
+        </table>
+
+
+      </div>
+
+      <div class="col-xs-6">
+        <table class="motion-controls">
+          <tr>
+            <th colspan="3">Motion</th>
+          </tr>
+          <tr>
+            <td><input type="button" value="START" class="btn btn-success btn-sm drone-control" data-command="start" data-keys="s,S"></td>
+            <td>
+              <button type="button" class="btn btn-primary btn-sm drone-control" data-command="back" title="Go back" data-keys="b,B">
+                <span class="glyphicon glyphicon-triangle-left"></span>
+              </button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-primary btn-sm drone-control" data-command="forward" title="Go forward" data-keys="f,F">
+                <span class="glyphicon glyphicon-triangle-right"></span>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="button" value="STOP" class="btn btn-danger btn-sm drone-control" data-command="stop" data-keys="x,X"></td>
+            <td>
+              <button type="button" class="btn btn-default btn-sm drone-control" data-command="slowdown" title="Slow down" data-keys="-">
+                <span class="glyphicon glyphicon-minus"></span>
+              </button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-default btn-sm drone-control" data-command="speedup" title="Speed up" data-keys="+">
+                <span class="glyphicon glyphicon-plus"></span>
+              </button>
+            </td>
+          </tr>
+      </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <script src="static/js/jquery-3.2.1.min.js"></script>
+  <script src="static/js/bootstrap.min.js"></script>
+  <script src="static/js/xtcd.js"></script>
+  <script src="static/js/app.js"></script>
+
+  </body>
+</html>
