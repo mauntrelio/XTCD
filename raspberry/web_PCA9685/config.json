@@ -12,5 +12,5 @@
       "/set": "set_param"
     }
   },
-  "I2C_ADDR": "0x41"
+  "I2C_ADDR": "0x40"
 }
