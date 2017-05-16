@@ -4,10 +4,13 @@
   "SERVER_MULTITHREADED": true,
   "STATIC_URL_PREFIX": "/static",
   "STATIC_CACHE" : 604800,
+  "CAMERA_URL": "http://%s:8080/stream/video.mjpeg",
   "ROUTE": {
     "GET": {
       "/": "default_response",
-      "/gallery": "gallery"
+      "/gallery": "gallery",
+      "/config": "config",
+      "/arm": "show_arm"
     },
     "POST": {
       "/up": "up",
@@ -17,11 +20,12 @@
       "/center": "center",
       "/forward": "forward",
       "/back": "back",
-      "/start": "start",
       "/stop": "stop",
       "/speedup": "speedup",
       "/slowdown": "slowdown",
-      "/picture": "take_picture"
+      "/picture": "take_picture",
+      "/save_config": "save_config",
+      "/arm": "arm"
     }
   },
   "I2C_ADDR": "0x40",
@@ -41,24 +45,34 @@
   "ESC_SPEED_START": 340,
   "ESC_SPEED_SAFEMAX": 350,
   "ESC_SPEED_MAX": 350,
-  "MOTOR_1": 8,
-  "MOTOR_2": 9,
-  "AZIMUTH": 0,
-  "ALTITUDE": 1,
-  "AZIMUTH_ORIENTATION": 1,
-  "ALTITUDE_ORIENTATION": 1, 
+  "MOTORS": [
+    {
+      "CHANNEL": 8
+    },
+    {
+      "CHANNEL": 9
+    }
+    ],
+  "AZIMUTH": { 
+    "CHANNEL" : 0,
+    "ORIENTATION": 1
+  },
+  "ALTITUDE": { 
+    "CHANNEL" : 1,
+    "ORIENTATION": 1
+  },
   "DIRECTIONS": [
 	{
-	"ADDRESS": 2,
-	"N": 445,
-	"F": 530,
-	"B": 320
+  	"ADDRESS": 2,
+  	"N": 445,
+  	"F": 530,
+  	"B": 320
 	},
 	{	
 	"ADDRESS": 3,
-	"N": 408,
-	"F": 500,
-	"B": 160
+  	"N": 408,
+  	"F": 500,
+  	"B": 160
 	}
 	]
 }
