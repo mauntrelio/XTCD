@@ -3,7 +3,7 @@
 import Adafruit_PCA9685
 import time, curses
 
-i2c = 0x41
+i2c = 0x40
 freq = 60
 channel = 8
 

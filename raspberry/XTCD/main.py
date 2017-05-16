@@ -66,22 +66,18 @@ class XTCDHandler(RPiHTTPRequestHandler):
 
   # POST /forward
   def forward(self):
-    self.set_direction(self.config.SERVO_MAX)
+    self.set_direction("F")
     self.render_template()
 
   # POST /back
   def back(self):
-    self.set_direction(self.config.SERVO_MIN)
-    self.render_template()
-
-  # POST /start
-  def start(self):
-    self.set_speed(self.config.ESC_SPEED_MIN)
+    self.set_direction("B")
     self.render_template()
 
   # POST /stop
   def stop(self):
     self.set_speed(self.config.ESC_SPEED_STOP)
+    self.set_direction("N")
     self.render_template()
 
   # POST /speedup
@@ -100,18 +96,31 @@ class XTCDHandler(RPiHTTPRequestHandler):
 
   def set_speed(self,speed):
     self.server.pwm.set_pwm(self.config.MOTOR_1, 0, speed)
-    self.server.pwm.set_pwm(self.config.MOTOR_2, 0, speed)
+    # self.server.pwm.set_pwm(self.config.MOTOR_2, 0, speed)
     self.server.status["MOTOR"] = speed
 
   def set_direction(self,direction):
     if self.server.status["DIRECTION"] != direction:
+      # put switches to neutral position
+      DIRS = self.config.DIRECTIONS
+      self.server.pwm.set_pwm(DIRS[0]["ADDRESS"], 0, DIRS[0]["N"])
+      self.server.pwm.set_pwm(DIRS[1]["ADDRESS"], 0, DIRS[1]["N"])
+      # stop motor
       self.set_speed(self.config.ESC_SPEED_STOP)
+      # wait
       time.sleep(self.config.CHANGE_DIR_PAUSE)
-      self.server.pwm.set_pwm(self.config.DIRECTION_1, 0, direction)
-      self.server.pwm.set_pwm(self.config.DIRECTION_2, 0, direction)
+      # put switches to proper direction
+      self.server.pwm.set_pwm(DIRS[0]["ADDRESS"], 0, DIRS[0][direction])
+      self.server.pwm.set_pwm(DIRS[1]["ADDRESS"], 0, DIRS[1][direction])
       self.server.status["DIRECTION"] = direction
-      self.set_speed(self.config.ESC_SPEED_MIN)
 
+      # set speed of motor only if desidered direction is forward or back  
+      if direction != "N":
+        # start faster and then slow down to the minimim
+        self.set_speed(self.config.ESC_SPEED_MIN+10)
+        time.sleep(2)
+        self.set_speed(self.config.ESC_SPEED_MIN)
+                                                                        
   # POST /picture
   def take_picture(self):
     self.render_template()
@@ -131,7 +140,6 @@ class XTCDHandler(RPiHTTPRequestHandler):
       else:
         self.give_404("Template %s missing" % template)
 
-
 def main():
 
   # read configuration from json
@@ -150,8 +158,13 @@ def main():
 
   # put motors to stop position
   pwm.set_pwm(config.MOTOR_1, 0, config.ESC_SPEED_STOP)
-  pwm.set_pwm(config.MOTOR_2, 0, config.ESC_SPEED_STOP)
+  # pwm.set_pwm(config.MOTOR_2, 0, config.ESC_SPEED_STOP)
 
+  # put switches to neutral position
+  DIRS = config.DIRECTIONS
+  pwm.set_pwm(DIRS[0]["ADDRESS"], 0, DIRS[0]["N"])
+  pwm.set_pwm(DIRS[1]["ADDRESS"], 0, DIRS[1]["N"])
+  
   # center camera
   servos_center = int((config.SERVO_MAX + config.SERVO_MIN)/2)
   pwm.set_pwm(config.AZIMUTH, 0, servos_center)
