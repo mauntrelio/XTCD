@@ -71,7 +71,7 @@ class XTCDHandler(RPiHTTPRequestHandler):
       self.server.pwm.set_pwm(channel, 0, pwm)
       self.server.status[param] = pwm
 
-  def decrease(self,channel,param)  
+  def decrease(self,channel,param):
     pwm = self.server.status[param] - self.config.MIN_STEP_POS
     if pwm >= self.config.SERVO_MIN:
       self.server.pwm.set_pwm(channel, 0, pwm)
