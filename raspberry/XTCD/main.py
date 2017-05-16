@@ -22,8 +22,8 @@ class XTCDHandler(RPiHTTPRequestHandler):
   # POST /up
   def up(self):
     channel = self.config.ALTITUDE
-    pwm = self.server.status["ALTITUDE"] - self.config.MIN_STEP_POS
-    if pwm >= self.config.SERVO_MIN:
+    pwm = self.server.status["ALTITUDE"] + self.config.MIN_STEP_POS
+    if pwm <= self.config.SERVO_MAX:
       self.server.pwm.set_pwm(channel, 0, pwm)
       self.server.status["ALTITUDE"] = pwm
     self.render_template()
@@ -31,8 +31,8 @@ class XTCDHandler(RPiHTTPRequestHandler):
   # POST /down
   def down(self):
     channel = self.config.ALTITUDE
-    pwm = self.server.status["ALTITUDE"] + self.config.MIN_STEP_POS
-    if pwm <= self.config.SERVO_MAX:
+    pwm = self.server.status["ALTITUDE"] - self.config.MIN_STEP_POS
+    if pwm >= self.config.SERVO_MIN:
       self.server.pwm.set_pwm(channel, 0, pwm)
       self.server.status["ALTITUDE"] = pwm
     self.render_template()
@@ -40,8 +40,8 @@ class XTCDHandler(RPiHTTPRequestHandler):
   # POST /left
   def left(self):
     channel = self.config.AZIMUTH
-    pwm = self.server.status["AZIMUTH"] + self.config.MIN_STEP_POS
-    if pwm <= self.config.SERVO_MAX:
+    pwm = self.server.status["AZIMUTH"] - self.config.MIN_STEP_POS
+    if pwm >= self.config.SERVO_MIN:
       self.server.pwm.set_pwm(channel, 0, pwm)
       self.server.status["AZIMUTH"] = pwm
     self.render_template()
@@ -49,8 +49,8 @@ class XTCDHandler(RPiHTTPRequestHandler):
   # POST /right
   def right(self):
     channel = self.config.AZIMUTH
-    pwm = self.server.status["AZIMUTH"] - self.config.MIN_STEP_POS
-    if pwm >= self.config.SERVO_MIN:
+    pwm = self.server.status["AZIMUTH"] + self.config.MIN_STEP_POS
+    if pwm <= self.config.SERVO_MAX:
       self.server.pwm.set_pwm(channel, 0, pwm)
       self.server.status["AZIMUTH"] = pwm
     self.render_template()
@@ -113,6 +113,9 @@ class XTCDHandler(RPiHTTPRequestHandler):
       self.server.pwm.set_pwm(DIRS[0]["ADDRESS"], 0, DIRS[0][direction])
       self.server.pwm.set_pwm(DIRS[1]["ADDRESS"], 0, DIRS[1][direction])
       self.server.status["DIRECTION"] = direction
+      self.set_speed(self.config.ESC_SPEED_MIN+10)
+      time.sleep(2)
+      self.set_speed(self.config.ESC_SPEED_MIN)
 
       # set speed of motor only if desidered direction is forward or back  
       if direction != "N":
@@ -159,6 +162,9 @@ def main():
   # put motors to stop position
   pwm.set_pwm(config.MOTOR_1, 0, config.ESC_SPEED_STOP)
   # pwm.set_pwm(config.MOTOR_2, 0, config.ESC_SPEED_STOP)
+  DIRS = config.DIRECTIONS
+  pwm.set_pwm(DIRS[0]["ADDRESS"], 0, DIRS[0]["N"])
+  pwm.set_pwm(DIRS[1]["ADDRESS"], 0, DIRS[1]["N"])
 
   # put switches to neutral position
   DIRS = config.DIRECTIONS
