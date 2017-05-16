@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# import Adafruit_PCA9685.PCA9685 as pca9685
-from pca9685 import pca9685 as pca9685
+import Adafruit_PCA9685.PCA9685 as pca9685
 import time
 
 class Drone:
