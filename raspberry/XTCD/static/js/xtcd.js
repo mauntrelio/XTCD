@@ -30,8 +30,8 @@ var XTCD = (function($,window,document,undefined) {
     });
 
     document.addEventListener("keydown", function(event) {
-      console.log(event.code);
-      console.log(event.key);
+      // console.log(event.code);
+      // console.log(event.key);
       var command = (mapping[event.code]) ? mapping[event.code] : mapping[event.key];
       if (command) {
         $.post("/"+command, {},

@@ -31,28 +31,34 @@
   "MIN_STEP_SPEED": 1,
   "MIN_STEP_POS": 5,
   "CHANGE_DIR_PAUSE": 2,
+  "STARTUP_PULSE": 2,
+  "BACK_DIRECTION": "F",
+  "FORWARD_DIRECTION": "B",
   "ESC_SETUP_MIN": 300,
   "ESC_SETUP_MAX": 550,
   "ESC_SPEED_STOP": 300,
   "ESC_SPEED_MIN": 328,
+  "ESC_SPEED_START": 340,
   "ESC_SPEED_SAFEMAX": 350,
   "ESC_SPEED_MAX": 350,
   "MOTOR_1": 8,
   "MOTOR_2": 9,
   "AZIMUTH": 0,
   "ALTITUDE": 1,
+  "AZIMUTH_ORIENTATION": 1,
+  "ALTITUDE_ORIENTATION": 1, 
   "DIRECTIONS": [
-        {
-        "ADDRESS": 2,
-        "N": 445,
-        "F": 530,
-        "B": 320
-        },
-        {       
-        "ADDRESS": 3,
-        "N": 408,
-        "F": 500,
-        "B": 160
-        }
-        ]
+	{
+	"ADDRESS": 2,
+	"N": 445,
+	"F": 530,
+	"B": 320
+	},
+	{	
+	"ADDRESS": 3,
+	"N": 408,
+	"F": 500,
+	"B": 160
+	}
+	]
 }
