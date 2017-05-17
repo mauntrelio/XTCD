@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>XTD Camera drone configuration</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/css/style.css">
+
+  </head>
+  <body>
+    <div class="container-fluid">
+
+    <div class="row">
+      <div class="col-xs-6">
+
+      <h2>Configuration</h2>
+
+		<form method="POST" action="/save_config" id="save_config">
+			<div class="form-group">
+				<label for="I2C_ADDR">I2C address of PCA9685 board (hex format)</label>
+				<input class="form-control" id="I2C_ADDR" value="{{I2C_ADDR}}">
+			</div>
+			<div class="form-group">
+				<label for="FREQUENCY">Frequency of PWM signal in Herz</label>
+				<input type="number" class="form-control" id="FREQUENCY" value="{{FREQUENCY}}">
+			</div>
+			<div class="form-group">
+				<label for="SERVO_MIN">Camera servos min PWM value</label>
+				<input type="number" class="form-control" id="SERVO_MIN" value="{{SERVO_MIN}}">
+			</div>
+			<div class="form-group">
+				<label for="SERVO_MAX">Camera servos min PWM value</label>
+				<input type="number" class="form-control" id="SERVO_MAX" value="{{SERVO_MAX}}">
+			</div>
+			<div class="form-group">
+				<label for="MIN_STEP_POS">Camera servos PWM step</label>
+				<input type="number" class="form-control" id="MIN_STEP_POS" value="{{MIN_STEP_POS}}">
+			</div>
+			<div class="form-group">
+				<label for="MIN_STEP_SPEED">Motor speed step</label>
+				<input type="number" class="form-control" id="MIN_STEP_SPEED" value="{{MIN_STEP_SPEED}}">
+			</div>
+			<div class="form-group">
+				<label for="ESC_SPEED_STOP">Motor 0 speed (stop)</label>
+				<input type="number" class="form-control" id="ESC_SPEED_STOP" value="{{ESC_SPEED_STOP}}">
+			</div>
+			<div class="form-group">
+				<label for="ESC_SPEED_START">Motor starting speed</label>
+				<input type="number" class="form-control" id="ESC_SPEED_START" value="{{ESC_SPEED_START}}">
+			</div>
+			<div class="form-group">
+				<label for="ESC_SPEED_MIN">Motor minimum speed</label>
+				<input type="number" class="form-control" id="ESC_SPEED_MIN" value="{{ESC_SPEED_MIN}}">
+			</div>
+			<div class="form-group">
+				<label for="CHANGE_DIR_PAUSE">Change directione pause (in seconds)</label>
+				<input type="number" class="form-control" id="CHANGE_DIR_PAUSE" value="{{CHANGE_DIR_PAUSE}}">
+			</div>
+			<div class="form-group">
+				<label for="STARTUP_PULSE">Startup speed duration (in seconds)</label>
+				<input type="number" class="form-control" id="STARTUP_PULSE" value="{{STARTUP_PULSE}}">
+			</div>			
+
+			<div class="form-group">
+				<label for="FORWARD_DIRECTION">Forward/backward direction</label>
+				<select class="form-control" id="FORWARD_DIRECTION" name="FORWARD_DIRECTION">
+					<option value="F">Standard</option>
+					<option value="B">Reverse</option>
+				</select>
+			</div>
+
+			<button type="submit" class="btn btn-danger">Save and apply</button>
+		</form> 	
+
+
+		</div>
+		</div>
+
+  	</div>
+
+  <script src="static/js/jquery-3.2.1.min.js"></script>
+  <script src="static/js/bootstrap.min.js"></script>
+  <script src="static/js/xtcd.js"></script>
+  <script src="static/js/app.js"></script>
+
+  </body>
+</html>

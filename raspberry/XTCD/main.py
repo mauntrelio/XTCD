@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import division
 from RPiHTTPServer import RPiHTTPServer, RPiHTTPRequestHandler
 from drone import Drone
 import socket
@@ -14,21 +13,23 @@ class XTCDHandler(RPiHTTPRequestHandler):
   # GET /
   def default_response(self):
     tpl_vars = self.server.drone.status
-    camera_url = self.server.config.CAMERA_URL % socket.gethostbyname(socket.gethostname())
+    camera_url = self.server.config["CAMERA_URL"] % socket.gethostbyname(socket.gethostname())
     tpl_vars["CAMERA_URL"] = camera_url
     self.render_template(tpl_vars=tpl_vars)
 
-  # GET /gallery
+  # GET /gallery 
+  # TODO: to be done
   def gallery(self):
-    self.render_template()
+    self.render_template("gallery.html")
 
   # GET /config
-  def config(self):
-    self.render_template()
+  def show_config(self):
+    self.render_template("config.html",self.config)
 
   # GET /arm
+  # TODO: to be done
   def show_arm(self):
-    self.render_template()
+    self.render_template("arm.html")
 
   # POST /up
   def up(self):
@@ -81,10 +82,12 @@ class XTCDHandler(RPiHTTPRequestHandler):
     self.render_template()
 
   # POST /picture
+  # TODO: to be done
   def take_picture(self):
     self.render_template()
 
   # POST /arm
+  # TODO: to be done
   def arm(self):
     self.render_template()
 
@@ -100,7 +103,7 @@ class XTCDHandler(RPiHTTPRequestHandler):
       self.content_type = "application/json"
       self.content = json.dumps(tpl_vars)
     else:
-      tpl = os.path.join(self.config.TEMPLATE_FOLDER, template)
+      tpl = os.path.join(self.config["TEMPLATE_FOLDER"], template)
       if os.path.isfile(tpl):
         tpl_content = open(tpl,"r").read()
         self.content = pystache.render(tpl_content, tpl_vars)
@@ -126,11 +129,11 @@ def main():
 
   # start the web server
   try:
-    print "Server listening on http://%s:%s" % (config.SERVER_ADDRESS,config.SERVER_PORT)
+    print "Server listening on http://%s:%s" % (config["SERVER_ADDRESS"],config["SERVER_PORT"])
     WebServer.serve_forever()
   except KeyboardInterrupt:
     pass
-    # TODO: cleanup pwm status
+    # TODO: cleanup pwm status on close
     WebServer.server.server_close()
 
 

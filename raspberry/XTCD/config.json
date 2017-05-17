@@ -9,7 +9,7 @@
     "GET": {
       "/": "default_response",
       "/gallery": "gallery",
-      "/config": "config",
+      "/config": "show_config",
       "/arm": "show_arm"
     },
     "POST": {

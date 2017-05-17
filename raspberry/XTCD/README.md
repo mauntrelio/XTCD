@@ -6,5 +6,6 @@ Web interface to XFEL Camera drone.
 Dependencies:
 
 - Adafruit PCA9685
+- RPiHTTPServer
 - pystache
 - UV4L
