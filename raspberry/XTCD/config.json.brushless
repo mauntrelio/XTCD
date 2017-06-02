@@ -30,7 +30,7 @@
   },
   "I2C_ADDR": "0x40",
   "FREQUENCY": 60,
-  "MIN_STEP_SPEED": 10,
+  "MIN_STEP_SPEED": 1,
   "STEP_SPEED_START": 20,
   "MIN_STEP_POS": 5,
   "CHANGE_DIR_PAUSE": 2,
@@ -40,9 +40,9 @@
   "ESC_SETUP_MIN": 300,
   "ESC_SETUP_MAX": 550,
   "ESC_SPEED_STOP": 300,
-  "ESC_SPEED_MIN": 150,
-  "ESC_SPEED_MAX": 500,
-  "MOTOR_TYPE": "B",
+  "ESC_SPEED_MIN": 328,
+  "ESC_SPEED_MAX": 350,
+  "MOTOR_TYPE": "L",
   "MOTORS": [
     {
       "CHANNEL": 8
@@ -71,6 +71,12 @@
   	"N": 445,
   	"F": 530,
   	"B": 320
+	},
+	{	
+	"ADDRESS": 3,
+  	"N": 408,
+  	"F": 500,
+  	"B": 160
 	}
 	]
 }

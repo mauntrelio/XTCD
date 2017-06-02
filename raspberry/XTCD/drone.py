@@ -19,23 +19,20 @@ class Drone:
       self.pwm.set_pwm(motor["CHANNEL"], 0, config["ESC_SPEED_STOP"])
 
     # put direction switches to neutral position
-    DIRS = config["DIRECTIONS"]
-    self.pwm.set_pwm(DIRS[0]["ADDRESS"], 0, DIRS[0]["N"])
-    self.pwm.set_pwm(DIRS[1]["ADDRESS"], 0, DIRS[1]["N"])
+    for switch in config["SERVO_SWITCHES"]:
+      self.pwm.set_pwm(switch["ADDRESS"], 0, switch["N"])
 
     # center camera
-    self.servos_center = int((config["SERVO_MAX"] + config["SERVO_MIN"])/2)
-    self.pwm.set_pwm(config["AZIMUTH"]["CHANNEL"], 0, self.servos_center)
-    self.pwm.set_pwm(config["ALTITUDE"]["CHANNEL"], 0, self.servos_center)
+    self.pwm.set_pwm(config["AZIMUTH"]["CHANNEL"], 0, config["AZIMUTH"]["NEUTRAL"])
+    self.pwm.set_pwm(config["ALTITUDE"]["CHANNEL"], 0, config["ALTITUDE"]["NEUTRAL"])
 
     # TODO: status should be read directly interfacing to hardware
     self.status = {
-      "AZIMUTH": self.servos_center,
-      "ALTITUDE": self.servos_center,
-      "SPEED": 0,
+      "AZIMUTH": config["AZIMUTH"]["NEUTRAL"],
+      "ALTITUDE": config["ALTITUDE"]["NEUTRAL"],
+      "SPEED": config["ESC_SPEED_STOP"],
       "DIRECTION": "N"
     }
-
 
   # move camera up
   def up(self):
@@ -55,18 +52,19 @@ class Drone:
 
   # move back camera to center position
   def center(self):
-    self.pwm.set_pwm(self.config["AZIMUTH"]["CHANNEL"], 0, self.servos_center)
-    self.pwm.set_pwm(self.config["ALTITUDE"]["CHANNEL"], 0, self.servos_center)
-    self.status["ALTITUDE"] = self.servos_center
-    self.status["AZIMUTH"] = self.servos_center
+    self.pwm.set_pwm(self.config["AZIMUTH"]["CHANNEL"], 0, self.config["AZIMUTH"]["NEUTRAL"])
+    self.pwm.set_pwm(self.config["ALTITUDE"]["CHANNEL"], 0, self.config["ALTITUDE"]["NEUTRAL"])
+    self.status["ALTITUDE"] = self.config["ALTITUDE"]["NEUTRAL"]
+    self.status["AZIMUTH"] = self.config["AZIMUTH"]["NEUTRAL"]
 
-  def step(self, param, direction):
-    step_dir = self.config[param]["ORIENTATION"]
-    channel = self.config[param]["CHANNEL"]
-    pwm_value = self.status[param] + direction * step_dir * self.config["MIN_STEP_POS"]
-    if pwm_value <= self.config["SERVO_MAX"] and pwm_value >= self.config["SERVO_MIN"]:
+  # move the camera of one step in the desired direction and coordinate
+  def step(self, coord, direction):
+    step_dir = self.config[coord]["ORIENTATION"]
+    channel = self.config[coord]["CHANNEL"]
+    pwm_value = self.status[coord] + direction * step_dir * self.config["MIN_STEP_POS"]
+    if pwm_value <= self.config[coord]["MAX"] and pwm_value >= self.config[coord]["MIN"]:
       self.pwm.set_pwm(channel, 0, pwm_value)
-      self.status[param] = pwm_value
+      self.status[coord] = pwm_value
 
   # start moving forward
   def forward(self):
@@ -83,41 +81,77 @@ class Drone:
 
   # Speed up
   def speedup(self):
-    pwm_value = self.status["SPEED"] + self.config["MIN_STEP_SPEED"]
-    if pwm_value <= self.config["ESC_SPEED_SAFEMAX"]:
-      self.set_speed(pwm_value)
+    # brush motor: increment depend on direction
+    if self.config["MOTOR_TYPE"] == "B":
+      if self.status["DIRECTION"] == self.config["FORWARD_DIRECTION"]:
+        pwm_value = self.status["SPEED"] + self.config["MIN_STEP_SPEED"]
+        if pwm_value <= self.config["ESC_SPEED_MAX"]:
+          self.set_speed(pwm_value)
+      else:
+        pwm_value = self.status["SPEED"] - self.config["MIN_STEP_SPEED"]
+        if pwm_value >= self.config["ESC_SPEED_STOP"]:
+          self.set_speed(pwm_value)
+    # brushless motor
+    else:
+      pwm_value = self.status["SPEED"] + self.config["MIN_STEP_SPEED"]
+      if pwm_value <= self.config["ESC_SPEED_MAX"]:
+        self.set_speed(pwm_value)
 
   # Slow down
   def slowdown(self):
-    pwm_value = self.status["SPEED"] - self.config["MIN_STEP_SPEED"]
-    if pwm_value >= self.config["ESC_SPEED_MIN"]:
-      self.set_speed(pwm_value)
+    # brush motor: increment depend on direction
+    if self.config["MOTOR_TYPE"] == "B":
+      if self.status["DIRECTION"] == self.config["FORWARD_DIRECTION"]:
+        pwm_value = self.status["SPEED"] - self.config["MIN_STEP_SPEED"]
+        if pwm_value >= self.config["ESC_SPEED_STOP"]:
+          self.set_speed(pwm_value)
+      else:
+        pwm_value = self.status["SPEED"] + self.config["MIN_STEP_SPEED"]
+        if pwm_value >= self.config["ESC_SPEED_STOP"]:
+          self.set_speed(pwm_value)
+    # brushless motor
+    else:
+      pwm_value = self.status["SPEED"] - self.config["MIN_STEP_SPEED"]
+      if pwm_value >= self.config["ESC_SPEED_MIN"]:
+        self.set_speed(pwm_value)
 
   def set_speed(self, speed):
     for motor in self.config["MOTORS"]:
       self.pwm.set_pwm(motor["CHANNEL"], 0, speed)
     self.status["SPEED"] = speed
 
-  def set_direction(self,direction):
+  def set_direction(self, direction):
     if self.status["DIRECTION"] != direction:
-      DIRS = self.config["DIRECTIONS"]
       # stop the motor
       self.set_speed(self.config["ESC_SPEED_STOP"])
-      # set direction switches in neutral position
-      self.pwm.set_pwm(DIRS[0]["ADDRESS"], 0, DIRS[0]["N"])
-      self.pwm.set_pwm(DIRS[1]["ADDRESS"], 0, DIRS[1]["N"])
-      self.status["DIRECTION"] = "N"
+      # if brushless or neutral position requested: set direction switches in neutral position
+      if self.config["MOTOR_TYPE"] != "B" or direction == "N":
+        for switch in self.config["SERVO_SWITCHES"]:
+          self.pwm.set_pwm(switch["ADDRESS"], 0, switch["N"])
+        self.status["DIRECTION"] = "N"
       
       # only move when direction is back or forward
       if direction != "N":
-        # wait
+        # wait before inverting direction
         time.sleep(self.config["CHANGE_DIR_PAUSE"])
-        # set direction switches in desired position
-        self.pwm.set_pwm(DIRS[0]["ADDRESS"], 0, DIRS[0][direction])
-        self.pwm.set_pwm(DIRS[1]["ADDRESS"], 0, DIRS[1][direction])
+        # if brushless set direction switches in desired position
+        if self.config["MOTOR_TYPE"] != "B":
+          for switch in self.config["SERVO_SWITCHES"]:
+            self.pwm.set_pwm(switch["ADDRESS"], 0, switch[direction])
+
         self.status["DIRECTION"] = direction
+
+        # set start and minimum speed
+        speed_start = self.config["ESC_SPEED_STOP"] + self.config["STEP_SPEED_START"]
+        speed_min = self.config["ESC_SPEED_STOP"] + self.config["MIN_STEP_SPEED"]
+
+        # brush motor in reverse direction needs backwards speed
+        if self.config["MOTOR_TYPE"] == "B" and self.status["DIRECTION"] == "B":
+          speed_start = self.config["ESC_SPEED_STOP"] - self.config["STEP_SPEED_START"]
+          speed_min = self.config["ESC_SPEED_STOP"] - self.config["MIN_STEP_SPEED"]
+
         # start the motor and keep speed higher than minimum for some seconds
-        self.set_speed(self.config["ESC_SPEED_START"])
+        self.set_speed(speed_start)
         time.sleep(self.config["STARTUP_PULSE"])
         # put the motor to minimum speed
-        self.set_speed(self.config["ESC_SPEED_MIN"])   
+        self.set_speed(speed_min)
