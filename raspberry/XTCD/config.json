@@ -1,6 +1,6 @@
 {
   "SERVER_ADDRESS": "0.0.0.0",
-  "SERVER_PORT": 5000,
+  "SERVER_PORT": 80,
   "SERVER_MULTITHREADED": true,
   "STATIC_URL_PREFIX": "/static",
   "STATIC_CACHE" : 604800,
@@ -30,27 +30,9 @@
   },
   "I2C_ADDR": "0x40",
   "FREQUENCY": 60,
-  "MIN_STEP_SPEED": 10,
-  "STEP_SPEED_START": 20,
   "MIN_STEP_POS": 5,
   "CHANGE_DIR_PAUSE": 2,
   "STARTUP_PULSE": 2,
-  "BACK_DIRECTION": "F",
-  "FORWARD_DIRECTION": "B",
-  "ESC_SETUP_MIN": 300,
-  "ESC_SETUP_MAX": 550,
-  "ESC_SPEED_STOP": 300,
-  "ESC_SPEED_MIN": 150,
-  "ESC_SPEED_MAX": 500,
-  "MOTOR_TYPE": "B",
-  "MOTORS": [
-    {
-      "CHANNEL": 8
-    },
-    {
-      "CHANNEL": 9
-    }
-    ],
   "AZIMUTH": {
     "CHANNEL" : 0,
     "ORIENTATION": 1,
@@ -58,19 +40,39 @@
     "MAX": 550,
     "NEUTRAL": 355
   },
-  "ALTITUDE": { 
+  "ALTITUDE": {
     "CHANNEL" : 1,
     "ORIENTATION": 1,
     "MIN": 160,
     "MAX": 550,
     "NEUTRAL": 355
   },
-  "SERVO_SWITCHES": [
-	{
-  	"ADDRESS": 2,
-  	"N": 445,
-  	"F": 530,
-  	"B": 320
-	}
-	]
+  "MOTORS": [
+    {
+      "CHANNEL": 8,
+      "TYPE": "B",
+      "SPEED_STEP": 10,
+      "SPEED_STOP": 370,
+      "DIRECTION": 1,
+      "F": {
+        "SPEED_START": 410,
+        "SPEED_MIN": 400,
+        "SPEED_MAX": 490
+      },
+      "B": {
+        "SPEED_START": 320,
+        "SPEED_MIN": 310,
+        "SPEED_MAX": 220
+      },
+      "SERVO": {
+        "CHANNEL": 2,
+        "POS_F": 530,
+        "POS_B": 530,
+        "POS_N": 445
+      }
+    }
+  ],
+  "RELAYS": [
+      7
+  ]
 }

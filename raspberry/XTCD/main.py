@@ -31,6 +31,11 @@ class XTCDHandler(RPiHTTPRequestHandler):
   def show_arm(self):
     self.render_template("arm.html")
 
+  # POST /switch
+  def switch(self):
+    self.server.drone.toggle(self.server.config["RELAYS"][0])
+    self.render_template()
+
   # POST /up
   def up(self):
     self.server.drone.up()
