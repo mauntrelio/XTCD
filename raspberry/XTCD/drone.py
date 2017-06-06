@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import Adafruit_PCA9685.PCA9685 as pca9685
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BOARD)
 import time
 
 class Drone:
@@ -31,10 +29,9 @@ class Drone:
     
     self.status["DIRECTION"] = "N"
 
-    # set relais GPIO as output and set them OFF
+    # set relays OFF
     for relay in self.RELAYS:
-      GPIO.setup(relay, GPIO.OUT)
-      GPIO.setup(relay, GPIO.LOW)
+      self.pwm.set_pwm(relay, 0, 0)
       self.status["RELAYS"][relay] = 0
 
     # center camera
@@ -77,17 +74,17 @@ class Drone:
 
   # switch on a relay
   def on(self, relay):
-    GPIO.setup(relay, GPIO.HIGH)
+    self.pwm.set_pwm(relay, 0, 4095)
     self.status["RELAYS"][relay] = 1
 
   # switch off a relay
   def off(self, relay):
-    GPIO.setup(relay, GPIO.LOW)
+    self.pwm.set_pwm(relay, 0, 0)
     self.status["RELAYS"][relay] = 0
 
   # toggle a relay
   def toggle(self, relay):
-    if self.status["RELAYS"][relay] = 0: 
+    if self.status["RELAYS"][relay] == 0: 
       self.on(relay)
     else:
       self.off(relay)  

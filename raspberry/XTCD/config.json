@@ -23,6 +23,7 @@
       "/stop": "stop",
       "/speedup": "speedup",
       "/slowdown": "slowdown",
+      "/switch": "switch",
       "/picture": "take_picture",
       "/save_config": "save_config",
       "/arm": "arm"
@@ -53,14 +54,14 @@
       "TYPE": "B",
       "SPEED_STEP": 10,
       "SPEED_STOP": 370,
-      "DIRECTION": 1,
+      "DIRECTION": -1,
       "F": {
-        "SPEED_START": 410,
-        "SPEED_MIN": 400,
+        "SPEED_START": 420,
+        "SPEED_MIN": 410,
         "SPEED_MAX": 490
       },
       "B": {
-        "SPEED_START": 320,
+        "SPEED_START": 300,
         "SPEED_MIN": 310,
         "SPEED_MAX": 220
       },
