@@ -31,7 +31,7 @@ class Drone:
 
     # set relays OFF
     for relay in self.RELAYS:
-      self.pwm.set_pwm(relay, 0, 0)
+      self.pwm.set_pwm(relay, 0, 4095)
       self.status["RELAYS"][relay] = 0
 
     # center camera
@@ -74,12 +74,12 @@ class Drone:
 
   # switch on a relay
   def on(self, relay):
-    self.pwm.set_pwm(relay, 0, 4095)
+    self.pwm.set_pwm(relay, 0, 0)
     self.status["RELAYS"][relay] = 1
 
   # switch off a relay
   def off(self, relay):
-    self.pwm.set_pwm(relay, 0, 0)
+    self.pwm.set_pwm(relay, 0, 4095)
     self.status["RELAYS"][relay] = 0
 
   # toggle a relay
@@ -156,21 +156,26 @@ class Drone:
       for motor in self.MOTORS:
         self.set_speed(motor["CHANNEL"], motor["SPEED_STOP"])
         # if brushless or neutral position requested: set direction switches in neutral position
-        if motor["TYPE"] == "L":
+        if motor["TYPE"] == "L" or direction == "N":
           if motor["SERVO"]:
             self.pwm.set_pwm(motor["SERVO"]["CHANNEL"], 0, motor["SERVO"]["POS_N"])
           self.status["DIRECTION"] = "N"
       
       # only start moving when requested direction is back or forward
       if direction != "N":
-        # wait before inverting direction
-        time.sleep(self.config["CHANGE_DIR_PAUSE"])
         for motor in self.MOTORS:
           if motor["SERVO"]:
-            motor_dir = 1
+            motor_dir = "F"
             if motor["DIRECTION"] == -1:
               motor_dir = "F" if direction == "B" else "B"
-            self.pwm.set_pwm(motor["SERVO"]["CHANNEL"], 0, motor["SERVO"]["POS_%s" % motor_dir])            
+            # brushless: wait before switching
+            if motor["TYPE"] == "L":
+              time.sleep(self.config["CHANGE_DIR_PAUSE"])
+            position =  motor["SERVO"]["POS_%s" % motor_dir]   
+            self.pwm.set_pwm(motor["SERVO"]["CHANNEL"], 0, position)            
+            # brush: wait after switching
+            if motor["TYPE"] == "B":
+              time.sleep(self.config["CHANGE_DIR_PAUSE"])  
 
         self.status["DIRECTION"] = direction
 

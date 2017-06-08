@@ -29,24 +29,24 @@
       "/arm": "arm"
     }
   },
-  "I2C_ADDR": "0x40",
+  "I2C_ADDR": "0x41",
   "FREQUENCY": 60,
   "MIN_STEP_POS": 5,
   "CHANGE_DIR_PAUSE": 2,
   "STARTUP_PULSE": 2,
   "AZIMUTH": {
     "CHANNEL" : 0,
-    "ORIENTATION": 1,
+    "ORIENTATION": -1,
     "MIN": 160,
     "MAX": 550,
-    "NEUTRAL": 355
+    "NEUTRAL": 410
   },
   "ALTITUDE": {
     "CHANNEL" : 1,
     "ORIENTATION": 1,
     "MIN": 160,
     "MAX": 550,
-    "NEUTRAL": 355
+    "NEUTRAL": 470
   },
   "MOTORS": [
     {
@@ -54,16 +54,16 @@
       "TYPE": "B",
       "SPEED_STEP": 10,
       "SPEED_STOP": 370,
-      "DIRECTION": -1,
+      "DIRECTION": 1,
       "F": {
-        "SPEED_START": 420,
-        "SPEED_MIN": 410,
-        "SPEED_MAX": 490
+        "SPEED_START": 400,
+        "SPEED_MIN": 390,
+        "SPEED_MAX": 420
       },
       "B": {
-        "SPEED_START": 300,
-        "SPEED_MIN": 310,
-        "SPEED_MAX": 220
+        "SPEED_START": 345,
+        "SPEED_MIN": 350,
+        "SPEED_MAX": 280
       },
       "SERVO": {
         "CHANNEL": 2,
