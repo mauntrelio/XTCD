@@ -165,14 +165,12 @@ class Drone:
       if direction != "N":
         # wait before inverting direction
         time.sleep(self.config["CHANGE_DIR_PAUSE"])
-        # if brushless set direction switches in desired position
         for motor in self.MOTORS:
-          if motor["TYPE"] == "L":
-            if motor["SERVO"]:
-              motor_dir = 1
-              if motor["DIRECTION"] == -1:
-                motor_dir = "F" if direction == "B" else "B"
-              self.pwm.set_pwm(motor["SERVO"]["CHANNEL"], 0, motor["SERVO"]["POS_%s" % motor_dir])
+          if motor["SERVO"]:
+            motor_dir = 1
+            if motor["DIRECTION"] == -1:
+              motor_dir = "F" if direction == "B" else "B"
+            self.pwm.set_pwm(motor["SERVO"]["CHANNEL"], 0, motor["SERVO"]["POS_%s" % motor_dir])            
 
         self.status["DIRECTION"] = direction
 
