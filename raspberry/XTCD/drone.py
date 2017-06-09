@@ -109,6 +109,9 @@ class Drone:
   # Speed up
   def speedup(self):
 
+    if self.status["DIRECTION"] == "N":
+      return
+
     for motor in self.MOTORS:
       step_dir = 1 # speed up is increase speed by default
       motor_dir = "F"
@@ -128,6 +131,9 @@ class Drone:
   # Slow down
   def slowdown(self):
 
+    if self.status["DIRECTION"] == "N":
+      return
+      
     for motor in self.MOTORS:
       step_dir = 1 # slow down up is decrease speed by default
       motor_dir = "F"
