@@ -134,6 +134,7 @@ def main():
 
   # start the web server
   try:
+    os.system("%s/keep_alive.py &" % basedir)
     print "Server listening on http://%s:%s" % (config["SERVER_ADDRESS"],config["SERVER_PORT"])
     WebServer.serve_forever()
   except KeyboardInterrupt:
