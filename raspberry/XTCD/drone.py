@@ -3,6 +3,7 @@
 
 import Adafruit_PCA9685.PCA9685 as pca9685
 import time
+import threading
 
 class Drone:
 
@@ -14,6 +15,7 @@ class Drone:
 
     self.MOTORS = self.config["MOTORS"] if self.config["MOTORS"] else []
     self.RELAYS = self.config["RELAYS"] if self.config["RELAYS"] else []
+    self.KEEP_ALIVE = self.config["KEEP_ALIVE"] if self.config["KEEP_ALIVE"] else False
 
     # instantiate and initialise pwm controller
     self.pwm = pca9685(address=int(config["I2C_ADDR"],16))
@@ -202,4 +204,17 @@ class Drone:
             motor_dir = "F" if direction == "B" else "B"
           
           self.set_speed(motor["CHANNEL"], motor[motor_dir]["SPEED_MIN"])
+
+  # move a servo to keep pwm board alive (prevent powebank poweroff)
+  def keep_alive(self, position):
+
+    if self.KEEP_ALIVE:
+      if position >= self.KEEP_ALIVE["MAX"]:
+        self.pwm.set_pwm(self.KEEP_ALIVE["CHANNEL"],0,self.KEEP_ALIVE["MIN"])
+        position = self.KEEP_ALIVE["MIN"]
+        
+      position = position + 40
+      self.pwm.set_pwm(self.KEEP_ALIVE["CHANNEL"],0,position)  
+
+      threading.Timer(self.KEEP_ALIVE["INTERVAL"], self.keep_alive, [position]).start()  
 

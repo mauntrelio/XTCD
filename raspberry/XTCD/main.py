@@ -3,7 +3,7 @@
 
 from RPiHTTPServer import RPiHTTPServer, RPiHTTPRequestHandler
 from drone import Drone
-import socket
+import netifaces as ni
 import pystache
 import os
 import json
@@ -13,7 +13,8 @@ class XTCDHandler(RPiHTTPRequestHandler):
   # GET /
   def default_response(self):
     tpl_vars = self.server.drone.status
-    camera_url = self.server.config["CAMERA_URL"] % socket.gethostbyname(socket.gethostname())
+    ip = ni.ifaddresses(self.server.config["NETWORK_INTERFACE"])[ni.AF_INET][0]['addr']
+    camera_url = self.server.config["CAMERA_URL"] % ip
     tpl_vars["CAMERA_URL"] = camera_url
     self.render_template(tpl_vars=tpl_vars)
 
@@ -132,9 +133,10 @@ def main():
   WebServer.server.drone = Drone(config) # instantiate drone controller
   WebServer.server.root_folder = basedir
 
+  
   # start the web server
   try:
-    os.system("%s/keep_alive.py &" % basedir)
+    WebServer.server.drone.keep_alive(config["KEEP_ALIVE"]["MIN"])
     print "Server listening on http://%s:%s" % (config["SERVER_ADDRESS"],config["SERVER_PORT"])
     WebServer.serve_forever()
   except KeyboardInterrupt:
@@ -146,3 +148,4 @@ def main():
 if __name__ == '__main__':
 
   main()
+

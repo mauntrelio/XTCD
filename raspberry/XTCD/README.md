@@ -8,4 +8,5 @@ Dependencies:
 - Adafruit PCA9685
 - RPiHTTPServer
 - pystache
+- netifaces
 - UV4L

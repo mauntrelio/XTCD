@@ -4,13 +4,6 @@
   "SERVER_MULTITHREADED": true,
   "STATIC_URL_PREFIX": "/static",
   "STATIC_CACHE" : 604800,
-  "NETWORK_INTERFACE": "wlan0",
-  "KEEP_ALIVE": {
-    "CHANNEL": 15,
-    "INTERVAL": 5,
-    "MIN": 160,
-    "MAX": 500
-  },
   "CAMERA_URL": "http://%s:8080/stream/video.mjpeg",
   "ROUTE": {
     "GET": {
@@ -42,41 +35,41 @@
   "CHANGE_DIR_PAUSE": 2,
   "STARTUP_PULSE": 2,
   "AZIMUTH": {
-    "CHANNEL" : 1,
-    "ORIENTATION": -1,
-    "MIN": 160,
-    "MAX": 550,
-    "NEUTRAL": 340
-  },
-  "ALTITUDE": {
     "CHANNEL" : 0,
     "ORIENTATION": -1,
     "MIN": 160,
     "MAX": 550,
-    "NEUTRAL": 340
+    "NEUTRAL": 410
+  },
+  "ALTITUDE": {
+    "CHANNEL" : 1,
+    "ORIENTATION": 1,
+    "MIN": 160,
+    "MAX": 550,
+    "NEUTRAL": 470
   },
   "MOTORS": [
     {
-      "CHANNEL": 4,
+      "CHANNEL": 8,
       "TYPE": "B",
-      "SPEED_STEP": 5,
+      "SPEED_STEP": 10,
       "SPEED_STOP": 370,
       "DIRECTION": 1,
       "F": {
-        "SPEED_START": 410,
-        "SPEED_MIN": 405,
-        "SPEED_MAX": 500
+        "SPEED_START": 400,
+        "SPEED_MIN": 390,
+        "SPEED_MAX": 420
       },
       "B": {
-        "SPEED_START": 335,
-        "SPEED_MIN": 340,
-        "SPEED_MAX": 220
+        "SPEED_START": 345,
+        "SPEED_MIN": 350,
+        "SPEED_MAX": 280
       },
       "SERVO": {
-        "CHANNEL": 8,
+        "CHANNEL": 2,
         "POS_F": 530,
         "POS_B": 530,
-        "POS_N": 160
+        "POS_N": 445
       }
     }
   ],
