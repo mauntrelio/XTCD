@@ -4,6 +4,7 @@
 from RPiHTTPServer import RPiHTTPServer, RPiHTTPRequestHandler
 from drone import Drone
 import netifaces as ni
+import socket
 import pystache
 import os
 import json
@@ -13,7 +14,19 @@ class XTCDHandler(RPiHTTPRequestHandler):
   # GET /
   def default_response(self):
     tpl_vars = self.server.drone.status
-    ip = ni.ifaddresses(self.server.config["NETWORK_INTERFACE"])[ni.AF_INET][0]['addr']
+    ip = None
+    ifaces = self.server.config["NETWORK_INTERFACE"]
+    for iface in ifaces:
+      try:
+        ip = ni.ifaddresses(iface)[ni.AF_INET][0]['addr']
+      except:
+        pass
+      if ip:
+        break
+
+    if not ip:
+      ip = socket.gethostname()    
+    
     camera_url = self.server.config["CAMERA_URL"] % ip
     tpl_vars["CAMERA_URL"] = camera_url
     self.render_template(tpl_vars=tpl_vars)
