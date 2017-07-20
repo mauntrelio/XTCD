@@ -4,33 +4,39 @@
 from RPiHTTPServer import RPiHTTPServer, RPiHTTPRequestHandler
 from drone import Drone
 import netifaces as ni
+import socket
+import threading
+import time
 import pystache
 import os
 import json
 
 class XTCDHandler(RPiHTTPRequestHandler):
 
+  switches = [None,None,None,None,
+              None,None,None,None,
+              None,None,None,None,
+              None,None,None,None]
+  
   # GET /
   def default_response(self):
     tpl_vars = self.server.drone.status
-    ip = ni.ifaddresses(self.server.config["NETWORK_INTERFACE"])[ni.AF_INET][0]['addr']
+    ip = None
+    ifaces = self.server.config["NETWORK_INTERFACE"]
+    for iface in ifaces:
+      try:
+        ip = ni.ifaddresses(iface)[ni.AF_INET][0]['addr']
+      except:
+        pass
+      if ip:
+        break
+
+    if not ip:
+      ip = socket.gethostname()    
+    
     camera_url = self.server.config["CAMERA_URL"] % ip
     tpl_vars["CAMERA_URL"] = camera_url
     self.render_template(tpl_vars=tpl_vars)
-
-  # GET /gallery 
-  # TODO: to be done
-  def gallery(self):
-    self.render_template("gallery.html")
-
-  # GET /config
-  def show_config(self):
-    self.render_template("config.html",self.config)
-
-  # GET /arm
-  # TODO: to be done
-  def show_arm(self):
-    self.render_template("arm.html")
 
   # POST /switch
   def switch(self):
@@ -87,18 +93,33 @@ class XTCDHandler(RPiHTTPRequestHandler):
     self.server.drone.slowdown()  
     self.render_template()
 
-  # POST /picture
-  # TODO: to be done
-  def take_picture(self):
+  # POST /set_pwm
+  def set_pwm(self):
+    self.server.drone.set_pwm(channel = int(self.form["channel"].value), value = int(self.form["value"].value))  
     self.render_template()
 
-  # POST /arm
-  # TODO: to be done
-  def arm(self):
+  # POST /switch_pwm
+  def switch_pwm(self):
+    channel = int(self.form["channel"].value)
+    value_on = int(self.form["value-on"].value)
+    value_off = int(self.form["value-off"].value)
+    if (self.status[channel] == None or self.status[channel] == value_off):
+      self.server.drone.set_pwm(channel = channel, value = value_on)
+      self.status[channel] = value_on
+    else:
+      self.server.drone.set_pwm(channel = channel, value = value_off)
+      self.status[channel] = value_off
+
     self.render_template()
 
-  # POST /save_config
-  def save_config(self):
+  # POST /sequence_pwm
+  def sequence_pwm(self):
+    params = self.form["params"]
+    sequence = params.split(";")
+    for command in sequence:
+      (channel,value,delay) = command.split(",") 
+      self.server.drone.set_pwm(channel = int(channel), value = int(value))
+      time.sleep(delay/1000.0)  
     self.render_template()
 
   def render_template(self, template="home.html", tpl_vars={}):

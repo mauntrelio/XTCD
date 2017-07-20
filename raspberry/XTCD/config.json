@@ -4,7 +4,7 @@
   "SERVER_MULTITHREADED": true,
   "STATIC_URL_PREFIX": "/static",
   "STATIC_CACHE" : 604800,
-  "NETWORK_INTERFACE": "wlan0",
+  "NETWORK_INTERFACE": ["wlan0","wlan1"],
   "KEEP_ALIVE": {
     "CHANNEL": 15,
     "INTERVAL": 5,
@@ -14,10 +14,7 @@
   "CAMERA_URL": "http://%s:8080/stream/video.mjpeg",
   "ROUTE": {
     "GET": {
-      "/": "default_response",
-      "/gallery": "gallery",
-      "/config": "show_config",
-      "/arm": "show_arm"
+      "/": "default_response"
     },
     "POST": {
       "/up": "up",
@@ -31,9 +28,9 @@
       "/speedup": "speedup",
       "/slowdown": "slowdown",
       "/switch": "switch",
-      "/picture": "take_picture",
-      "/save_config": "save_config",
-      "/arm": "arm"
+      "/set_pwm": "set_pwm",
+      "/switch_pwm": "switch_pwm",
+      "/sequence_pwm": "sequence_pwm"
     }
   },
   "I2C_ADDR": "0x41",

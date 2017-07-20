@@ -42,6 +42,13 @@ class Drone:
     self.status["AZIMUTH"] = config["AZIMUTH"]["NEUTRAL"]
     self.status["ALTITUDE"] = config["ALTITUDE"]["NEUTRAL"]
 
+  # generic set pwm method 
+  # please note that this method completely bypass any check
+  # and it does not update the 
+  # possible corresponding statuses
+  def set_pwm(self,**kwargs)
+    self.pwm.set_pwm(kwargs["channel"], 0, kwargs["value"])
+
   # move camera up
   def up(self):
     self.step("ALTITUDE", 1)
@@ -137,7 +144,7 @@ class Drone:
       return
       
     for motor in self.MOTORS:
-      step_dir = 1 # slow down up is decrease speed by default
+      step_dir = 1 # slow down is decrease speed by default
       motor_dir = "F"
       # brush motor: increment depends on direction
       if motor["TYPE"] == "B":

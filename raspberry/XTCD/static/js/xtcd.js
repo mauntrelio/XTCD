@@ -7,7 +7,7 @@ var XTCD = (function($,window,document,undefined) {
     $(".drone-control").on("click",function(){
       var $this = $(this);
       var command = $this.data("command");
-      $.post("/"+command, {},
+      $.post("/"+command, this.dataset,
         function(data){
           console.log(data);
       });
@@ -19,22 +19,21 @@ var XTCD = (function($,window,document,undefined) {
     var mapping = {};
 
     $(".drone-control").each(function(){
-      var $this = $(this);
+      var element = this;
+      var $this = $(element);
       if ($this.data("keys")) {
         var keys = $this.data("keys").split(",");
         var command = $this.data("command");
         keys.forEach(function(key){
-          mapping[key] = command;
+          mapping[key] = { command: command, data: element.dataset };
         });
       }
     });
 
-    document.addEventListener("keydown", function(event) {
-      // console.log(event.code);
-      // console.log(event.key);
-      var command = (mapping[event.code]) ? mapping[event.code] : mapping[event.key];
-      if (command) {
-        $.post("/"+command, {},
+    document.addEventListener("keydown", function(e) {
+      var event = (mapping[e.code]) ? mapping[e.code] : mapping[e.key];
+      if (event) {
+        $.post("/" + event.command, event.data,
           function(data){
             console.log(data);
         });
