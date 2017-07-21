@@ -1,4 +1,5 @@
 .conf
+config.json
 *.py[cod]
 .buildinfo
 .idea/*

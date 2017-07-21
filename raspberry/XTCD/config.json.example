@@ -4,7 +4,7 @@
   "SERVER_MULTITHREADED": true,
   "STATIC_URL_PREFIX": "/static",
   "STATIC_CACHE" : 604800,
-  "NETWORK_INTERFACE": ["wlan0","wlan1"],
+  "NETWORK_INTERFACE": ["wlan1", "eth0"],
   "KEEP_ALIVE": {
     "CHANNEL": 15,
     "INTERVAL": 5,
@@ -40,7 +40,7 @@
   "STARTUP_PULSE": 2,
   "AZIMUTH": {
     "CHANNEL" : 1,
-    "ORIENTATION": -1,
+    "ORIENTATION": 1,
     "MIN": 160,
     "MAX": 550,
     "NEUTRAL": 340
