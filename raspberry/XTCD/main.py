@@ -95,31 +95,33 @@ class XTCDHandler(RPiHTTPRequestHandler):
 
   # POST /set_pwm
   def set_pwm(self):
-    self.server.drone.set_pwm(channel = int(self.form["channel"].value), value = int(self.form["value"].value))  
+    channel = int(self.form["channel"].value)
+    value = int(self.form["value"].value)
+    self.server.drone.set_pwm(channel = channel, value = value)  
     self.render_template()
 
   # POST /switch_pwm
   def switch_pwm(self):
     channel = int(self.form["channel"].value)
-    value_on = int(self.form["value-on"].value)
-    value_off = int(self.form["value-off"].value)
-    if (self.status[channel] == None or self.status[channel] == value_off):
+    value_on = int(self.form["valueOn"].value)
+    value_off = int(self.form["valueOff"].value)
+    if (self.switches[channel] == None or self.switches[channel] == value_off):
       self.server.drone.set_pwm(channel = channel, value = value_on)
-      self.status[channel] = value_on
+      self.switches[channel] = value_on
     else:
       self.server.drone.set_pwm(channel = channel, value = value_off)
-      self.status[channel] = value_off
+      self.switches[channel] = value_off
 
     self.render_template()
 
   # POST /sequence_pwm
   def sequence_pwm(self):
-    params = self.form["params"]
-    sequence = params.split(";")
+    params = self.form["params"].value
+    sequence = params.split("|")
     for command in sequence:
       (channel,value,delay) = command.split(",") 
       self.server.drone.set_pwm(channel = int(channel), value = int(value))
-      time.sleep(delay/1000.0)  
+      time.sleep(int(delay)/1000.0)  
     self.render_template()
 
   def render_template(self, template="home.html", tpl_vars={}):

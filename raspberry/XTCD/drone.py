@@ -46,7 +46,7 @@ class Drone:
   # please note that this method completely bypass any check
   # and it does not update the 
   # possible corresponding statuses
-  def set_pwm(self,**kwargs)
+  def set_pwm(self,**kwargs):
     self.pwm.set_pwm(kwargs["channel"], 0, kwargs["value"])
 
   # move camera up
