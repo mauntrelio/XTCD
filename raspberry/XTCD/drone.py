@@ -11,11 +11,18 @@ class Drone:
 
     self.config = config
     # TODO: status should be read directly interfacing to hardware
-    self.status = {"SPEEDS": {}, "RELAYS": {}}
+    self.status = {
+      "SPEEDS": {}, 
+      "RELAYS": {}, 
+      "PWM": [None,None,None,None,
+              None,None,None,None,
+              None,None,None,None,
+              None,None,None,None]
+              }
 
-    self.MOTORS = self.config["MOTORS"] if self.config["MOTORS"] else []
-    self.RELAYS = self.config["RELAYS"] if self.config["RELAYS"] else []
-    self.KEEP_ALIVE = self.config["KEEP_ALIVE"] if self.config["KEEP_ALIVE"] else False
+    self.MOTORS = config["MOTORS"] if "MOTORS" in config else []
+    self.RELAYS = config["RELAYS"] if "RELAYS" in config else []
+    self.KEEP_ALIVE = config["KEEP_ALIVE"] if "KEEP_ALIVE" in config else False
 
     # instantiate and initialise pwm controller
     self.pwm = pca9685(address=int(config["I2C_ADDR"],16))
@@ -23,22 +30,23 @@ class Drone:
 
     # put motors to stop position
     for motor in self.MOTORS:
-      self.pwm.set_pwm(motor["CHANNEL"], 0, motor["SPEED_STOP"])
+      self.set_pwm(channel = motor["CHANNEL"], value = motor["SPEED_STOP"])
       self.status["SPEEDS"][motor["CHANNEL"]] = motor["SPEED_STOP"]
       # put direction switches to neutral position
       if motor["SERVO"]:
-        self.pwm.set_pwm(motor["SERVO"]["CHANNEL"], 0, motor["SERVO"]["POS_N"])
+        self.set_pwm(channel = motor["SERVO"]["CHANNEL"], value = motor["SERVO"]["POS_N"])
     
     self.status["DIRECTION"] = "N"
 
     # set relays OFF
-    for relay in self.RELAYS:
-      self.pwm.set_pwm(relay, 0, 4095)
-      self.status["RELAYS"][relay] = 0
+    for i in xrange(len(self.RELAYS)):
+      relay = self.RELAYS[i]
+      self.set_pwm(channel = relay["CHANNEL"], value = relay["OFF"])
+      self.status["RELAYS"][i] = 0
 
     # center camera
-    self.pwm.set_pwm(config["AZIMUTH"]["CHANNEL"], 0, config["AZIMUTH"]["NEUTRAL"])
-    self.pwm.set_pwm(config["ALTITUDE"]["CHANNEL"], 0, config["ALTITUDE"]["NEUTRAL"])
+    self.set_pwm(channel = config["AZIMUTH"]["CHANNEL"], value = config["AZIMUTH"]["NEUTRAL"])
+    self.set_pwm(channel = config["ALTITUDE"]["CHANNEL"], value = config["ALTITUDE"]["NEUTRAL"])
     self.status["AZIMUTH"] = config["AZIMUTH"]["NEUTRAL"]
     self.status["ALTITUDE"] = config["ALTITUDE"]["NEUTRAL"]
 
@@ -48,6 +56,7 @@ class Drone:
   # possible corresponding statuses
   def set_pwm(self,**kwargs):
     self.pwm.set_pwm(kwargs["channel"], 0, kwargs["value"])
+    self.status["PWM"][kwargs["channel"]] = kwargs["value"]    
 
   # move camera up
   def up(self):
@@ -67,8 +76,8 @@ class Drone:
 
   # move back camera to center position
   def center(self):
-    self.pwm.set_pwm(self.config["AZIMUTH"]["CHANNEL"], 0, self.config["AZIMUTH"]["NEUTRAL"])
-    self.pwm.set_pwm(self.config["ALTITUDE"]["CHANNEL"], 0, self.config["ALTITUDE"]["NEUTRAL"])
+    self.set_pwm(channel = self.config["AZIMUTH"]["CHANNEL"], value = self.config["AZIMUTH"]["NEUTRAL"])
+    self.set_pwm(channel = self.config["ALTITUDE"]["CHANNEL"], value = self.config["ALTITUDE"]["NEUTRAL"])
     self.status["ALTITUDE"] = self.config["ALTITUDE"]["NEUTRAL"]
     self.status["AZIMUTH"] = self.config["AZIMUTH"]["NEUTRAL"]
 
@@ -78,17 +87,19 @@ class Drone:
     channel = self.config[coord]["CHANNEL"]
     pwm_value = self.status[coord] + direction * step_dir * self.config["MIN_STEP_POS"]
     if pwm_value <= self.config[coord]["MAX"] and pwm_value >= self.config[coord]["MIN"]:
-      self.pwm.set_pwm(channel, 0, pwm_value)
+      self.set_pwm(channel = channel, value = pwm_value)
       self.status[coord] = pwm_value
 
   # switch on a relay
   def on(self, relay):
-    self.pwm.set_pwm(relay, 0, 0)
+    RELAY = self.RELAYS[relay]
+    self.set_pwm(channel = RELAY["CHANNEL"], value = RELAY["ON"])
     self.status["RELAYS"][relay] = 1
 
   # switch off a relay
   def off(self, relay):
-    self.pwm.set_pwm(relay, 0, 4095)
+    RELAY = self.RELAYS[relay]
+    self.set_pwm(channel = RELAY["CHANNEL"], value = RELAY["OFF"])
     self.status["RELAYS"][relay] = 0
 
   # toggle a relay
@@ -110,7 +121,7 @@ class Drone:
   def stop(self):
     # put motors to stop position
     for motor in self.MOTORS:
-      self.pwm.set_pwm(motor["CHANNEL"], 0, motor["SPEED_STOP"])
+      self.set_pwm(channel = motor["CHANNEL"], value = motor["SPEED_STOP"])
       self.status["SPEEDS"][motor["CHANNEL"]] = motor["SPEED_STOP"]
     
     self.set_direction("N")
@@ -161,7 +172,7 @@ class Drone:
 
   # Set the speed of a motor      
   def set_speed(self, motor, speed):
-    self.pwm.set_pwm(motor, 0, speed)
+    self.set_pwm(channel = motor, value = speed)
     self.status["SPEEDS"][motor] = speed
 
   # move forward / backward / neutral
@@ -173,7 +184,7 @@ class Drone:
         # if brushless or neutral position requested: set direction switches in neutral position
         if motor["TYPE"] == "L" or direction == "N":
           if motor["SERVO"]:
-            self.pwm.set_pwm(motor["SERVO"]["CHANNEL"], 0, motor["SERVO"]["POS_N"])
+            self.set_pwm(channel = motor["SERVO"]["CHANNEL"], value = motor["SERVO"]["POS_N"])
           self.status["DIRECTION"] = "N"
       
       # only start moving when requested direction is back or forward
@@ -187,10 +198,10 @@ class Drone:
             if motor["TYPE"] == "L":
               time.sleep(self.config["CHANGE_DIR_PAUSE"])
             position =  motor["SERVO"]["POS_%s" % motor_dir]   
-            self.pwm.set_pwm(motor["SERVO"]["CHANNEL"], 0, position)            
+            self.set_pwm(channel = motor["SERVO"]["CHANNEL"], value = position)            
             # brush: wait after switching
             if motor["TYPE"] == "B":
-              time.sleep(self.config["CHANGE_DIR_PAUSE"])  
+              time.sleep(self.config["CHANGE_DIR_PAUSE"])
 
         self.status["DIRECTION"] = direction
 
@@ -217,11 +228,11 @@ class Drone:
 
     if self.KEEP_ALIVE:
       if position >= self.KEEP_ALIVE["MAX"]:
-        self.pwm.set_pwm(self.KEEP_ALIVE["CHANNEL"],0,self.KEEP_ALIVE["MIN"])
+        self.set_pwm(channel = self.KEEP_ALIVE["CHANNEL"], value = self.KEEP_ALIVE["MIN"])
         position = self.KEEP_ALIVE["MIN"]
         
       position = position + 40
-      self.pwm.set_pwm(self.KEEP_ALIVE["CHANNEL"],0,position)  
+      self.set_pwm(channel = self.KEEP_ALIVE["CHANNEL"], value = position)  
 
       threading.Timer(self.KEEP_ALIVE["INTERVAL"], self.keep_alive, [position]).start()  
 

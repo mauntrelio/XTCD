@@ -12,11 +12,6 @@ import os
 import json
 
 class XTCDHandler(RPiHTTPRequestHandler):
-
-  switches = [None,None,None,None,
-              None,None,None,None,
-              None,None,None,None,
-              None,None,None,None]
   
   # GET /
   def default_response(self):
@@ -38,9 +33,16 @@ class XTCDHandler(RPiHTTPRequestHandler):
     tpl_vars["CAMERA_URL"] = camera_url
     self.render_template(tpl_vars=tpl_vars)
 
+  # GET /config
+  def show_config(self):
+    tpl_vars["WEB_CONFIG"] = json.dumps(self.config, indent = 4)
+    tpl_vars["DRONE_CONFIG"] = json.dumps(self.server.drone.config, indent = 4)
+    self.render_template(tpl_vars=tpl_vars)
+
   # POST /switch
   def switch(self):
-    self.server.drone.toggle(self.server.config["RELAYS"][0])
+    index = int(self.form["index"].value)
+    self.server.drone.toggle(index)
     self.render_template()
 
   # POST /up
@@ -105,12 +107,12 @@ class XTCDHandler(RPiHTTPRequestHandler):
     channel = int(self.form["channel"].value)
     value_on = int(self.form["valueOn"].value)
     value_off = int(self.form["valueOff"].value)
-    if (self.switches[channel] == None or self.switches[channel] == value_off):
+    status = self.server.drone.status["PWM"][channel]
+
+    if (status == None or status == value_off):
       self.server.drone.set_pwm(channel = channel, value = value_on)
-      self.switches[channel] = value_on
     else:
       self.server.drone.set_pwm(channel = channel, value = value_off)
-      self.switches[channel] = value_off
 
     self.render_template()
 
@@ -144,22 +146,42 @@ def main():
 
   # read configuration from json
   basedir = os.path.dirname(os.path.abspath(__file__))
-  config_file = os.path.join(basedir,"config.json")
+  web_config_file = os.path.join(basedir,"config","web.json")
+  drone_config_file = os.path.join(basedir,"config","drone.json")
+  sensors_config_file = os.path.join(basedir,"config","sensors.json")
 
   # instantiate http server
-  WebServer = RPiHTTPServer(config_file, XTCDHandler)
+  WebServer = RPiHTTPServer(web_config_file, XTCDHandler)
+
+  # parse drone config file
+  drone_config = {}
+  
+  if os.path.isfile(drone_config_file):
+    try:
+      drone_config = json.load(open(drone_config_file,'r'))
+    except:
+      print "Error parsing drone configuration file"
+
+  # parse drone config file
+  sensors_config = {}
+  
+  if os.path.isfile(sensors_config_file):
+    try:
+      sensors_config = json.load(open(sensors_config_file,'r'))
+    except:
+      print "Error parsing sensors configuration file"
 
   # quick access to config params
   config = WebServer.server.config
 
   # assign variables to web server
-  WebServer.server.drone = Drone(config) # instantiate drone controller
+  WebServer.server.drone = Drone(drone_config) # instantiate drone controller
   WebServer.server.root_folder = basedir
 
-  
-  # start the web server
+   # start the web server
   try:
-    WebServer.server.drone.keep_alive(config["KEEP_ALIVE"]["MIN"])
+    if "KEEP_ALIVE" in drone_config:
+      WebServer.server.drone.keep_alive(drone_config["KEEP_ALIVE"]["MIN"])
     print "Server listening on http://%s:%s" % (config["SERVER_ADDRESS"],config["SERVER_PORT"])
     WebServer.serve_forever()
   except KeyboardInterrupt:
