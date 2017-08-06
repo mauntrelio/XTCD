@@ -9,25 +9,67 @@
   font-family: 'Lato', sans-serif;
 }
 
-div.range-value {
-  font-size: 12px;
-  text-align: right;
-  display: inline-block;
-  width: 35px;
+div.row {
+  margin-top: 10px;
+}
+
+.glyphicon, .btn {
+  text-shadow: none;
+}
+
+textarea.form-config {
+  font-family: monospace;
+  width: 100%;
+  min-height: 500px;
+}
+
+h3 {
+  margin-top: 0;
+}
+
+img.logo {
+  margin-right: 10px;
+  width: 60px;
+}
+
+div.controls {
+  position: relative;
+  max-width: 1024px;
+}
+
+div.view-controls {
+  position: absolute;
+  left: 10px;
+  max-width: 50%;
+}
+
+div.motion-controls {
+  position: absolute;
+  right: 10px;
+  max-width: 50%;
+}
+
+#pwm-status {
+  display: none;
+}
+
+#pwm-status span {
+  font-weight: bold;
 }
 
 #video {
   width: 100%;
   max-width: 1024px;
+  min-width: 315px;
   max-height: 768px;
 }
 
-table.view-controls td, table.motion-controls td  {
+#view-controls > table td, #motion-controls > table td  {
   padding: 3px;
   text-align: center;
 }
 
-table.view-controls th, table.motion-controls th {
+#view-controls > table th, #motion-controls > table th {
   text-align: center;
   font-weight: bold;
   border-bottom: 1px solid silver;

@@ -85,7 +85,7 @@ class Drone:
   def step(self, coord, direction):
     step_dir = self.config[coord]["ORIENTATION"]
     channel = self.config[coord]["CHANNEL"]
-    pwm_value = self.status[coord] + direction * step_dir * self.config["MIN_STEP_POS"]
+    pwm_value = self.status["PWM"][channel] + direction * step_dir * self.config["MIN_STEP_POS"]
     if pwm_value <= self.config[coord]["MAX"] and pwm_value >= self.config[coord]["MIN"]:
       self.set_pwm(channel = channel, value = pwm_value)
       self.status[coord] = pwm_value
