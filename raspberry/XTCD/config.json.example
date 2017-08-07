@@ -4,9 +4,9 @@
   "SERVER_MULTITHREADED": true,
   "STATIC_URL_PREFIX": "/static",
   "STATIC_CACHE" : 604800,
-  "NETWORK_INTERFACE": ["wlan1", "eth0"],
+  "NETWORK_INTERFACE": ["wlan0","wlan1"],
   "KEEP_ALIVE": {
-    "CHANNEL": 15,
+    "CHANNEL": 5,
     "INTERVAL": 5,
     "MIN": 160,
     "MAX": 500
@@ -39,18 +39,18 @@
   "CHANGE_DIR_PAUSE": 2,
   "STARTUP_PULSE": 2,
   "AZIMUTH": {
-    "CHANNEL" : 1,
+    "CHANNEL" : 0,
     "ORIENTATION": 1,
-    "MIN": 160,
-    "MAX": 550,
-    "NEUTRAL": 340
+    "MIN": 120,
+    "MAX": 650,
+    "NEUTRAL": 390
   },
   "ALTITUDE": {
-    "CHANNEL" : 0,
+    "CHANNEL" : 1,
     "ORIENTATION": -1,
-    "MIN": 160,
-    "MAX": 550,
-    "NEUTRAL": 340
+    "MIN": 140,
+    "MAX": 620,
+    "NEUTRAL": 390
   },
   "MOTORS": [
     {
@@ -60,24 +60,24 @@
       "SPEED_STOP": 370,
       "DIRECTION": 1,
       "F": {
-        "SPEED_START": 410,
-        "SPEED_MIN": 405,
-        "SPEED_MAX": 500
+        "SPEED_START": 400,
+        "SPEED_MIN": 390,
+        "SPEED_MAX": 420
       },
       "B": {
-        "SPEED_START": 335,
-        "SPEED_MIN": 340,
-        "SPEED_MAX": 220
+        "SPEED_START": 345,
+        "SPEED_MIN": 350,
+        "SPEED_MAX": 280
       },
       "SERVO": {
-        "CHANNEL": 8,
+        "CHANNEL": 3,
         "POS_F": 530,
         "POS_B": 530,
-        "POS_N": 160
+        "POS_N": 445
       }
     }
   ],
   "RELAYS": [
-      7
+      11
   ]
 }

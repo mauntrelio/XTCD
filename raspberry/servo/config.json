@@ -11,7 +11,7 @@
   },
   "I2C_ADDR": "0x40",
   "SERVO_FREQ": 60,
-  "SERVO_MIN": 150,
-  "SERVO_MAX": 550,
+  "SERVO_MIN": 120,
+  "SERVO_MAX": 650,
   "SERVO_CHANNEL": 0
 }
