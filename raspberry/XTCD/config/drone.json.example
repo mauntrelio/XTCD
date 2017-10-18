@@ -1,0 +1,59 @@
+{
+  "I2C_ADDR": "0x41",
+  "FREQUENCY": 60,
+  "MIN_STEP_POS": 5,
+  "CHANGE_DIR_PAUSE": 2,
+  "STARTUP_PULSE": 2,
+  "AZIMUTH": {
+    "CHANNEL" : 0,
+    "ORIENTATION": -1,
+    "MIN": 160,
+    "MAX": 550,
+    "NEUTRAL": 410
+  },
+  "ALTITUDE": {
+    "CHANNEL" : 1,
+    "ORIENTATION": 1,
+    "MIN": 160,
+    "MAX": 550,
+    "NEUTRAL": 470
+  },
+  "MOTORS": [
+    {
+      "CHANNEL": 8,
+      "TYPE": "B",
+      "SPEED_STEP": 10,
+      "SPEED_STOP": 370,
+      "DIRECTION": 1,
+      "F": {
+        "SPEED_START": 400,
+        "SPEED_MIN": 390,
+        "SPEED_MAX": 420
+      },
+      "B": {
+        "SPEED_START": 345,
+        "SPEED_MIN": 350,
+        "SPEED_MAX": 280
+      },
+      "SERVO": {
+        "CHANNEL": 2,
+        "POS_F": 530,
+        "POS_B": 530,
+        "POS_N": 445
+      }
+    }
+  ],
+  "RELAYS": [
+      {
+        "CHANNEL": 7,
+        "ON": 0,
+        "OFF": 4095
+      }
+  ],
+  "KEEP_ALIVE": {
+    "CHANNEL": 5,
+    "INTERVAL": 5,
+    "MIN": 160,
+    "MAX": 500
+  }
+}
