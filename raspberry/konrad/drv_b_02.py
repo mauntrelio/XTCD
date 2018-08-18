@@ -49,7 +49,7 @@ time.sleep(1)
 
 #travel
 pwm.set_pwm(4,0,335)
-time.sleep(90)
+time.sleep(300)
 
 #slow down
 pwm.set_pwm(4,0,341)

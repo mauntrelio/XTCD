@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Test buttons</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+  </head>
+  <body>
+    <div class="container">
+
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Motion buttons</h2>
+	<button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="6,0,0|7,4095,0|8,0,0|9,4095,0|10,4095,0|11,4095,0|4,370,1000|3,530,3000|4,370,1000|4,350,5000|4,370,5000|3,445,0">Launch</button>
+	<div class="row"></div>
+          <button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="6,4095,0|7,0,0|8,4095,0|9,4095,0|10,4095,0|11,0,0|4,370,1000|3,530,3000|4,370,1000|4,396,60000|4,370,5000|3,445,0">DST app 60</button>
+	<div class="row"></div>
+	<button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="6,4095,0|7,0,0|8,4095,0|9,4095,0|10,4095,0|11,0,0|4,370,1000|3,530,3000|4,370,1000|4,396,10000|4,370,5000|3,445,0">DST app 10</button>
+	<div class="row"></div>
+        <h2>camera buttons</h2>
+	<button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="1,210,0|0,600,0">Left</button>
+	<button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="1,210,0|0,480,0">L/F</button>
+	<button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="1,210,0|0,350,0">Front</button>
+	<button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="1,210,0|0,250,0">F/R</button>
+	<button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="1,210,0|0,140,0">Right</button>
+	<div class="row"></div>
+	<button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="1,210,0|0,350,0|0,480,0|1,110,0">L CHRG</button>
+	<button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
+            data-params="1,210,0|0,350,0|0,160,0|1,110,0">R CHRG</button>
+	<div class="row"></div>
+	<div class="row"></div>
+	</div>
+    </div>
+    <div class="row"></div>
+    </div>
+  <script src="/static/js/jquery-3.2.1.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+  <script src="/static/js/xtcd.js"></script>
+  <script src="/static/js/app.js"></script>
+
+  </body>
+</html>
