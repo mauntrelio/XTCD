@@ -1,6 +1,6 @@
 .conf
-config/*.json
-config/backup/*json*
+**/config/*.json
+**/config/backup/*json*
 *.py[cod]
 .buildinfo
 .idea/*
@@ -9,3 +9,7 @@ dist
 build
 *.egg-info
 sftp-config.json*
+arduino/.pioenvs
+arduino/.piolibdeps
+arduino/.clang_complete
+arduino/.gcc-flags.json

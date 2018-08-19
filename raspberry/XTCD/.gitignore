@@ -1,9 +1,0 @@
-.conf
-config/*.json
-config/backup/*
-*.py[cod]
-.buildinfo
-.idea/*
-dist
-build
-*.egg-info
