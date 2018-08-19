@@ -45,7 +45,7 @@ var XTCD = (function($,window,document,undefined) {
         $.post("/" + event.command, event.data, update_view);
       }
 	  });
-  }
+  };
 
   var toggle_pwm_status = function() {
     $("#show-pwm").on("click", function(){
@@ -55,37 +55,44 @@ var XTCD = (function($,window,document,undefined) {
         $("#pwm-status").hide();
       }
     });
-  }
+  };
 
   var validate_config = function() {
-    $("#save-config").on("submit", function(e){
-      var web_config, drone_config;
 
-      try {
-        JSON.parse($("#web-config").val());
-        web_config = true;
-      } catch(e) {
-        web_config = false;
-      }
+    $("#save-config").on("submit", function(event){
 
-      try {
-        JSON.parse($("#drone-config").val());
-        drone_config = true;
-      } catch(e) {
-        drone_config = false;
-      }
+      var configs = [
+        {
+          "config": $("#web-config").val(),
+          "valid": undefined,
+          "file": "web"
+        },
+        {
+          "config": $("#drone-config").val(),
+          "valid": undefined,
+          "file": "drone"
+        }
+      ];
 
-      if (!web_config) {
-        alert("Error in web configuration file! Cannot save!");
-        e.preventDefault();
-      } else if (!drone_config) {
-        alert("Error in drone configuration file! Cannot save!");
-        e.preventDefault();
-      } else {
-        $(this).submit();
-      }
+      var valid = true;
+
+      configs.forEach(function(config){
+        try {
+          JSON.parse(config.config);
+          config.valid = true;
+        } catch(err) {
+          config.valid = false;
+        }
+        if (!config.valid) {
+          alert("Error in " + config.file + " configuration file! Cannot save!");
+          valid = false;
+        } 
+      });
+
+      return valid;
+      
     })
-  }
+  };
 
 
   var init = function() {

@@ -50,44 +50,39 @@ class XTCDHandler(RPiHTTPRequestHandler):
 
   # POST /save_config
   def save_config(self):
-    web_config = self.form["web-config"].value
-    drone_config = self.form["drone-config"].value
 
-    web_config_valid = None
-    drone_config_valid = None
+    configs = [
+      {
+        "config": self.form["web-config"].value,
+        "valid": None,
+        "file": self.server.web_config_file
+      },
+      {
+        "config": self.form["drone-config"].value,
+        "valid": None,
+        "file": self.server.drone_config_file
+      }
+    ]
+
     restart = False
 
-    try:
-      json.loads(web_config)
-      web_config_valid = True
-    except ValueError:
-      web_config_valid = False
-    try:
-      json.loads(drone_config)
-      drone_config_valid = True
-    except ValueError:
-      drone_config_valid = False
+    for config in configs:
+      try:
+        json.loads(config["config"])
+        config["valid"] = True
+      except ValueError:
+        config["valid"] = False
 
-    if web_config_valid:
-      # make a backup of the old config file
-      backup_file = self.server.web_config_file + "." + time.strftime("%Y%m%d%H%M%S")
-      copyfile(self.server.web_config_file, backup_file)
-      # write new config
-      f = open(self.server.web_config_file,"w")
-      f.write(web_config)
-      f.close()
-      restart = True
+      if config["valid"]:
+        # make a backup of the old config file
+        backup_file = os.path.join(os.path.dirname(config["file"]),"backup",os.path.basename(config["file"]) + "." + time.strftime("%Y-%m-%d_%H-%M-%S"))
+        copyfile(config["file"], backup_file)
+        # write new config
+        f = open(config["file"],"w")
+        f.write(config["config"])
+        f.close()
+        restart = True
     
-    if drone_config_valid:
-      # make a backup of the old config file
-      backup_file = self.server.drone_config_file + "." + time.strftime("%Y%m%d%H%M%S")
-      copyfile(self.server.drone_config_file, backup_file)
-      # write new config
-      f = open(self.server.drone_config_file,"w")
-      f.write(drone_config)
-      f.close()
-      restart = True
-
     self.render_template(template="saveconfig.html")
 
     if restart:
