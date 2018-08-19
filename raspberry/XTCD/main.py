@@ -91,11 +91,16 @@ class XTCDHandler(RPiHTTPRequestHandler):
       
       setattr(self,"post_serve_response",post_serve_response)
 
-
   # POST /switch
   def switch(self):
+    index = int(self.form["pin"].value)
+    self.server.drone.switch(index)
+    self.render_template()
+
+  # POST /pwm_toggle
+  def pwm_toggle(self):
     index = int(self.form["index"].value)
-    self.server.drone.toggle(index)
+    self.server.drone.pwm_toggle(index)
     self.render_template()
 
   # POST /up

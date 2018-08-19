@@ -4,6 +4,7 @@
 import Adafruit_PCA9685.PCA9685 as pca9685
 import time
 import threading
+import RPi.GPIO as GPIO
 
 class Drone:
 
@@ -17,12 +18,16 @@ class Drone:
       "PWM": [None,None,None,None,
               None,None,None,None,
               None,None,None,None,
-              None,None,None,None]
-              }
+              None,None,None,None],
+      "GPIO_OUT": {},
+      "GPIO_IN": {}              
+      }
 
     self.MOTORS = config["MOTORS"] if "MOTORS" in config else []
     self.RELAYS = config["RELAYS"] if "RELAYS" in config else []
     self.KEEP_ALIVE = config["KEEP_ALIVE"] if "KEEP_ALIVE" in config else False
+    self.GPIO_IN = {}
+    self.GPIO_OUT = {}
 
     # instantiate and initialise pwm controller
     self.pwm = pca9685(address=int(config["I2C_ADDR"],16))
@@ -38,11 +43,42 @@ class Drone:
     
     self.status["DIRECTION"] = "N"
 
-    # set relays OFF
+    # start up GPIO
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+
+    # set pwm relays OFF
     for i in xrange(len(self.RELAYS)):
       relay = self.RELAYS[i]
       self.set_pwm(channel = relay["CHANNEL"], value = relay["OFF"])
       self.status["RELAYS"][i] = 0
+
+    # set GPIO outputs to initial status
+    if "GPIO_OUT" in config:
+      for i in xrange(len(config["GPIO_OUT"])):
+        gpio = config["GPIO_OUT"][i]
+        self.GPIO_OUT[gpio["PIN"]] = gpio
+        GPIO.setup(gpio["PIN"],GPIO.OUT)
+        GPIO.output(gpio["PIN"], gpio["STARTUP"])
+        self.status["GPIO_OUT"][gpio["PIN"]] = gpio["STARTUP"]
+
+    # set GPIO inputs callbacks
+    if "GPIO_IN" in config:
+      for i in xrange(len(config["GPIO_IN"])):
+        gpio = config["GPIO_IN"][i]
+        self.GPIO_IN[gpio["PIN"]] = gpio
+        if gpio["PULL"] == "UP":
+          GPIO.setup(gpio["PIN"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        elif gpio["PULL"] == "DOWN":
+          GPIO.setup(gpio["PIN"], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        else:
+          GPIO.setup(gpio["PIN"], GPIO.IN)
+          
+        if hasattr(self, gpio["CALLBACK"]):
+        # the same callback is added as falling and raising. 
+          # Callback itself should determine which one is the case
+          GPIO.add_event_detect(gpio["PIN"], GPIO.BOTH, callback=getattr(self, gpio["CALLBACK"]), bouncetime=gpio["BOUNCE"])
+
 
     # center camera
     self.set_pwm(channel = config["AZIMUTH"]["CHANNEL"], value = config["AZIMUTH"]["NEUTRAL"])
@@ -53,7 +89,7 @@ class Drone:
   # generic set pwm method 
   # please note that this method completely bypass any check
   # and it does not update the 
-  # possible corresponding statuses
+  # possible corresponding azimuth/altitude/motors statuses
   def set_pwm(self,**kwargs):
     self.pwm.set_pwm(kwargs["channel"], 0, kwargs["value"])
     self.status["PWM"][kwargs["channel"]] = kwargs["value"]    
@@ -90,25 +126,42 @@ class Drone:
       self.set_pwm(channel = channel, value = pwm_value)
       self.status[coord] = pwm_value
 
-  # switch on a relay
-  def on(self, relay):
+  # switch on a pwm controlled relay
+  def pwm_on(self, relay):
     RELAY = self.RELAYS[relay]
     self.set_pwm(channel = RELAY["CHANNEL"], value = RELAY["ON"])
     self.status["RELAYS"][relay] = 1
 
-  # switch off a relay
-  def off(self, relay):
+  # switch off a pwm controlled relay
+  def pwm_off(self, relay):
     RELAY = self.RELAYS[relay]
     self.set_pwm(channel = RELAY["CHANNEL"], value = RELAY["OFF"])
     self.status["RELAYS"][relay] = 0
 
-  # toggle a relay
-  def toggle(self, relay):
+  # toggle a pwm controlled relay
+  def pwm_toggle(self, relay):
     if self.status["RELAYS"][relay] == 0: 
-      self.on(relay)
+      self.pwm_on(relay)
     else:
-      self.off(relay)  
-    
+      self.pwm_off(relay)  
+
+  # set a gpio switch on
+  def switch_on(self, pin):
+    GPIO.output(pin, 1)
+    self.status["GPIO_OUT"][pin] = 1
+
+  # set a gpio switch off
+  def switch_off(self, pin):
+    GPIO.output(pin, 0)
+    self.status["GPIO_OUT"][pin] = 0
+  
+  # toggle a gpio switch
+  def switch(self, pin):
+    if self.status["GPIO_OUT"][pin] == 0: 
+      self.switch_on(pin)
+    else:
+      self.switch_off(pin)
+
   # start moving forward
   def forward(self):
     self.set_direction("F")
