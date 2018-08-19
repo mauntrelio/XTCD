@@ -289,3 +289,12 @@ class Drone:
 
       threading.Timer(self.KEEP_ALIVE["INTERVAL"], self.keep_alive, [position]).start()  
 
+  # example callback to GPIO event
+  def button_press(self, pin):
+    # determine if button was pressed
+    value = GPIO.input(pin)
+    if value == GPIO.LOW:
+      # stop motor, center camera, switch on light
+      self.center()
+      self.stop()
+      self.switch_off(19)
