@@ -1,6 +1,11 @@
-config.json
-web.json
-drone.json
-sensors.json
-.idea
-node
+.conf
+config/*.json
+config/backup/*json*
+*.py[cod]
+.buildinfo
+.idea/*
+*/.idea
+dist
+build
+*.egg-info
+sftp-config.json*
