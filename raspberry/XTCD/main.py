@@ -3,6 +3,7 @@
 
 from RPiHTTPServer import RPiHTTPServer, RPiHTTPRequestHandler
 from drone import Drone
+from sensors import Sensors
 from shutil import copyfile
 import netifaces as ni
 import socket
@@ -47,6 +48,20 @@ class XTCDHandler(RPiHTTPRequestHandler):
     self.tpl_vars["WEB_CONFIG"] = json.dumps(self.config, indent = 4)
     self.tpl_vars["DRONE_CONFIG"] = json.dumps(self.server.drone.config, indent = 4)
     self.render_template(template="config.html")
+
+  # GET /sensor?id=sensor_id
+  def get_sensor(self):
+    sensor_id = self.qs["id"][0]
+    if sensor_id in self.server.sensors.config: 
+      value = self.server.sensors.get_value(sensor_id)
+    else:
+      value = None
+    self.content_type = "application/json"
+    self.content = json.dumps({
+      "sensor": sensor_id,
+      "value": value,
+      "unit": self.server.sensors.config[sensor_id]["unit"]
+      })
 
   # POST /save_config
   def save_config(self):
@@ -187,6 +202,7 @@ class XTCDHandler(RPiHTTPRequestHandler):
   def render_template(self, template="home.html"):
 
     self.tpl_vars.update(self.server.drone.status)
+    # self.tpl_vars.update(self.server.sensors.status)
     pwm = self.tpl_vars["PWM"]
     self.tpl_vars["PWM"] = dict([str(i),pwm[i]] for i in range(0,len(pwm)) if pwm[i] != None)
     
@@ -248,6 +264,7 @@ def main():
 
   # assign variables to web server
   WebServer.server.drone = Drone(drone_config) # instantiate drone controller
+  WebServer.server.sensors = Sensors(sensors_config) # instantiate sensors controller
   WebServer.server.root_folder = basedir
   WebServer.server.web_config_file = web_config_file
   WebServer.server.drone_config_file = drone_config_file
