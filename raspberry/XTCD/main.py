@@ -47,6 +47,7 @@ class XTCDHandler(RPiHTTPRequestHandler):
   def show_config(self):
     self.tpl_vars["WEB_CONFIG"] = json.dumps(self.config, indent = 4)
     self.tpl_vars["DRONE_CONFIG"] = json.dumps(self.server.drone.config, indent = 4)
+    self.tpl_vars["SENSORS_CONFIG"] = json.dumps(self.server.sensors.config, indent = 4)
     self.render_template(template="config.html")
 
   # GET /sensor?id=sensor_id
@@ -76,6 +77,11 @@ class XTCDHandler(RPiHTTPRequestHandler):
         "config": self.form["drone-config"].value,
         "valid": None,
         "file": self.server.drone_config_file
+      },
+      {
+        "config": self.form["sensors-config"].value,
+        "valid": None,
+        "file": self.server.sensors_config_file
       }
     ]
 
@@ -268,6 +274,7 @@ def main():
   WebServer.server.root_folder = basedir
   WebServer.server.web_config_file = web_config_file
   WebServer.server.drone_config_file = drone_config_file
+  WebServer.server.sensors_config_file = sensors_config_file
 
    # start the web server
   try:

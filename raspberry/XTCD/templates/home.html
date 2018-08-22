@@ -138,9 +138,11 @@
       {{/IS_OPERATOR}}
 
       <div id="diagnostic" class="col-md-4">
-        <table class="table table-striped table-hover">
+        <table class="table table-hover">
           <tr>
-            <th colspan="2">Diagnostic</th>
+            <th colspan="2">Diagnostic <button type="button" class="btn btn-success btn-sm drone-control pull-right" data-callback="update_sensors" title="Refresh" data-keys="R,r">
+                <span class="glyphicon glyphicon-refresh"></span>
+              </button></th>
           </tr>
           <tr>
             <td><b>CPU temp</b></td>

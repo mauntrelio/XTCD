@@ -24,11 +24,13 @@ class Sensors:
     self.adc_GAIN = 2/3
     self.adc_MAX = 4.096*3/2
 
+    # TODO: implements DHT22 sensor and other
 
   # TODO:
   #   - implement periodic readings (interval)
   #   - implement Data Logger
-  #   - implement get_value and read_value (for periodic readings)
+  #   - implement different methods get_value (to get the last read value for periodic readings) 
+  #     and read_value (to read a value immediately)
 
   def get_value(self, sensor_id):
 
@@ -45,5 +47,8 @@ class Sensors:
     elif sensor["source"] == "ADS1":
       reading = self.adc.read_adc(sensor["channel"], gain=self.adc_GAIN)
       value = round((reading / 32768.0) * self.adc_MAX,2)
+
+    self.status[sensor_id]["last_value"] = value
+    self.status[sensor_id]["last_reading"] = time.time()
 
     return value
