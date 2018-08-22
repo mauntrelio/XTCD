@@ -95,11 +95,26 @@ var XTCD = (function($,window,document,undefined) {
   };
 
 
+  var update_sensors = function() {
+    $(".diagnostic").each(function(index){
+      var $element = $(this);
+      var sensor_id = $element.data("sensorId");
+      $.ajax({
+        url: "/sensor?id=" + sensor_id
+      }).done(function(data){
+        $element.html(data.value + " " + data.unit);
+      });  
+    });
+  }
+
+
   var init = function() {
     bind_buttons();
     bind_keys();
     toggle_pwm_status();
     validate_config();
+    update_sensors();
+    setInterval(update_sensors, 30000);
   };
 
   return {

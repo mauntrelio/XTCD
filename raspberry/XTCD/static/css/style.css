@@ -64,12 +64,12 @@ div.motion-controls {
   max-height: 768px;
 }
 
-#view-controls > table td, #motion-controls > table td  {
+#view-controls > table td, #motion-controls > table td, #diagnostic > table td  {
   padding: 3px;
   text-align: center;
 }
 
-#view-controls > table th, #motion-controls > table th {
+#view-controls > table th, #motion-controls > table th, #diagnostic > table th {
   text-align: center;
   font-weight: bold;
   border-bottom: 1px solid silver;
