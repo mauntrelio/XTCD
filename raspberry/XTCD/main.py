@@ -55,13 +55,15 @@ class XTCDHandler(RPiHTTPRequestHandler):
     sensor_id = self.qs["id"][0]
     if sensor_id in self.server.sensors.config: 
       value = self.server.sensors.get_value(sensor_id)
+      unit = self.server.sensors.config[sensor_id]["unit"]
     else:
       value = None
+      unit = ""
     self.content_type = "application/json"
     self.content = json.dumps({
       "sensor": sensor_id,
       "value": value,
-      "unit": self.server.sensors.config[sensor_id]["unit"]
+      "unit": unit
       })
 
   # POST /save_config

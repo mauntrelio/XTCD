@@ -110,7 +110,11 @@ var XTCD = (function($,window,document,undefined) {
       $.ajax({
         url: "/sensor?id=" + sensor_id
       }).done(function(data){
-        $element.html(data.value + " " + data.unit);
+        if (data.value === null) {
+          $element.html("N/A");
+        } else {
+          $element.html(data.value + " " + data.unit);
+        }  
       });  
     });
   }
