@@ -48,9 +48,13 @@ var XTCD = (function($,window,document,undefined) {
     });
 
     document.addEventListener("keydown", function(e) {
+      var targetElement = e.target || e.srcElement;
       var event = (mapping[e.code]) ? mapping[e.code] : mapping[e.key];
+      if (!(targetElement.tagName == "TEXTAREA") && !(targetElement.tagName == "INPUT")){
+        e.preventDefault();
+      };
       if (event) {
-        $.post("/" + event.command, event.data, update_view);
+        $.post("/" + event.command, event.data, XTCD.update_view);
       }
 	  });
   };
