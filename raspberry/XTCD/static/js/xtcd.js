@@ -24,7 +24,8 @@ var XTCD = (function($,window,document,undefined) {
       var callback = $this.data("callback");
       if (command) {
         $.post("/"+command, this.dataset, XTCD.update_view);  
-      } else if (callback) {
+      } 
+      if (callback) {
         XTCD[callback]();
       }
       
@@ -78,6 +79,11 @@ var XTCD = (function($,window,document,undefined) {
           "config": $("#web-config").val(),
           "valid": undefined,
           "file": "web"
+        },        
+        {
+          "config": $("#sensors-config").val(),
+          "valid": undefined,
+          "file": "sensors"
         },
         {
           "config": $("#drone-config").val(),
