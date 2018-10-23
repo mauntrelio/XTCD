@@ -1,0 +1,54 @@
+{
+	"cpu_temp": {
+		"group": "Health check",
+		"host": "localhost",
+		"source": "commandline",
+		"cmd": "/usr/bin/vcgencmd measure_temp  | tr -dc '0-9.'",
+		"unit": "°C",
+		"type": "float",
+		"description": "Local CPU temperature",
+		"label": "CPU temp",
+		"frequency": 60,
+		"log": true,
+		"alarm": false
+	},
+	"under_voltage": {		
+		"group": "Health check",
+		"host": "localhost",
+		"source": "commandline",
+		"cmd": "/usr/bin/vcgencmd get_throttled | tr -d '[:space:]' | tail -c 1",
+		"unit": "",
+		"type": "integer",
+		"description": "CPU under voltage",
+		"label": "Under voltage",
+		"frequency": 60,
+		"log": true,
+		"alarm": false
+	},
+	"battery_1":  {		
+		"group": "Battery",
+		"host": "localhost",
+		"source": "ADS1",
+		"channel": 0,
+		"unit": "V",
+		"type": "float",
+		"description": "Voltage Battery 1",
+		"label": "1st cell",
+		"frequency": 60,
+		"log": true,
+		"alarm": false
+	},
+	"battery_2":  {		
+		"group": "Battery",
+		"host": "localhost",
+		"source": "ADS1",
+		"channel": 1,
+		"unit": "V",
+		"type": "float",
+		"description": "Voltage Battery 2",
+		"label": "2nd cell",
+		"frequency": 60,
+		"log": true,
+		"alarm": false
+	}
+}
