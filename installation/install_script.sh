@@ -23,7 +23,7 @@ apt-get -y install uv4l uv4l-raspicam
 apt-get -y install uv4l-raspicam-extras
 apt-get -y install uv4l-server 
 
-#apt-get -y  uv4l-uvc uv4l-xscreen uv4l-mjpegstream uv4l-dummy uv4l-raspidisp
+# apt-get -y  uv4l-uvc uv4l-xscreen uv4l-mjpegstream uv4l-dummy uv4l-raspidisp
 
 service uv4l_raspicam restart
 
@@ -35,12 +35,9 @@ apt-get -y install watchdog
 update-rc.d watchdog defaults
 
 # install additional software
-apt-get -y install joe
-apt-get -y install git
-
+apt-get -y install joe git i2c-tools
 
 # Install camera_control XTCD
-
 cd /var/
 git clone https://github.com/mauntrelio/XTCD.git
 
@@ -48,5 +45,6 @@ git clone https://github.com/mauntrelio/XTCD.git
 
 # script for startup in /etc/init.d/xtcd
 cp /var/XTCD/installation/config_resources/init-script /etc/init.d/xtcd
-update-rc xtcd defaults
+chmod a+x /etc/init.d/xtcd
+update-rc.d xtcd defaults
 
