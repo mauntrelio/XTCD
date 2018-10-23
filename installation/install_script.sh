@@ -42,9 +42,11 @@ apt-get -y install git
 # Install camera_control XTCD
 
 cd /var/
-git pull ...
+git clone https://github.com/mauntrelio/XTCD.git
 
 # change the config *.json files
-# script for startup in /etc/init.d/xtcd
 
+# script for startup in /etc/init.d/xtcd
+cp /var/XTCD/installation/config_resources/init-script /etc/init.d/xtcd
+update-rc xtcd defaults
 
