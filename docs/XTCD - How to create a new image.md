@@ -92,3 +92,5 @@ Put the content of your public key(s) in /mnt/raspimg/root/.ssh/authorized_keys
 =======================================================
 
 ## On the Raspberry	
+
+To be documented...
