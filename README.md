@@ -1,16 +1,16 @@
 # XTCD
 
-*XFEL Tunnel Camera Drone*
+**XFEL Tunnel Camera Drone**
 
 XTCD (XFEL Tunnel Camera Drone) is a project about the design, test and implementation of tunnel inspection battery powered drones moving on rails, controlled with Raspberry Pis via a responsive web interface on the Wi-Fi network connection.
 
 ## Folder structure:
 
-- docs: documentation
-- installation: installation scripts and config template files
-- old_stuff: old scripts and software used during the first development phase
-- scripts: useful scripts
-- system: core part of the projects, contains the Python scripts to run the web server and operate the drone. This is the part that is going to be installed on the Raspberry Pi.
+- **docs**: documentation
+- **installation**: installation scripts and config template files
+- **old_stuff**: old scripts and software used during the first development phase
+- **scripts**: useful scripts
+- **system**: core part of the software, contains the Python scripts to run the web server and operate the drone. This is the part that is going to be installed on the Raspberry Pi.
 
 ## Dependencies:
 
@@ -26,7 +26,7 @@ XTCD (XFEL Tunnel Camera Drone) is a project about the design, test and implemen
 
 ## Raspberry Pi configuration:
 
-
+To be documented...
 
 ## Contributing:
 
