@@ -5,34 +5,40 @@ Please note the following instructions refer to Raspbian Strecth as of October 2
 ## On a Desktop Ubuntu/Debian PC:
 
 - Download Raspbian lite image from:
-	cd /tmp
-	mkdir -p /tmp/raspi
-	cd /tmp/raspi
-	wget https://downloads.raspberrypi.org/raspbian_lite_latest -O raspbian.img.zip
-	unzip raspbian.img.zip
-	mv *.img raspbian.img
+
+```bash
+cd /tmp
+mkdir -p /tmp/raspi
+cd /tmp/raspi
+wget https://downloads.raspberrypi.org/raspbian_lite_latest -O raspbian.img.zip
+unzip raspbian.img.zip
+mv *.img raspbian.img
+```
 
 ### Mounting the image 
 
 - Mount the image (it's an image of two partion, so you need losetup):
-	losetup -P /dev/loop0 raspbian.img
-	mkdir -p /mnt/raspimg
-	mount /dev/loop0p2 /mnt/raspimg
-	mount /dev/loop0p1 /mnt/raspimg/boot
+
+```bash
+losetup -P /dev/loop0 raspbian.img
+mkdir -p /mnt/raspimg
+mount /dev/loop0p2 /mnt/raspimg
+mount /dev/loop0p1 /mnt/raspimg/boot
+```
 
 ### Optional: avoid that the filesystem is immediately resized on boot
 
 - Edit cmdline.txt in boot partition by removing the argument
 
-	init=/usr/lib/raspi-config/init_resize.sh
+	`init=/usr/lib/raspi-config/init_resize.sh`
 
-	Also remove the file
+- Also remove the file
 
-	/mnt/raspimg/etc/init.d/resize2fs_once
+	`/mnt/raspimg/etc/init.d/resize2fs_once`
 
 	and the symbolic link to it
 
-	/mnt/raspimg/etc/rc3.d/S01resize2fs_once
+	`/mnt/raspimg/etc/rc3.d/S01resize2fs_once`
 
 ### Setting up the Wi-Fi connection 
 
@@ -49,19 +55,24 @@ Edit hostname in /mnt/raspimg/etc/hostname
 
 Create a password for user pi using 
 
-	mkpasswd -m sha-512 <newpassword> <salt>. 
+	mkpasswd -m sha-512 <newpassword> <salt> 
 
 The salt value is a random string of your choice, anything will do.
 
 Change the /mnt/raspimg/etc/shadow file with the new password above. Delete the string between the 1st and 2nd ‘:’ colons on the line starting with "root" (and "pi"). Paste in the new value between these colons.
 
-### Activate SSh and set up ssh-keys
+### Activate SSH and set up ssh-keys
+
+
+Place an empty file named 'ssh' onto the boot (FAT) partition
+
+	touch /mnt/raspimg/boot/ssh
 
 Put the content of your public key(s) in /mnt/raspimg/root/.ssh/authorized_keys
 
 ### Activate modules
 
-/mnt/raspimg/boot/config.txt
+Content of `/mnt/raspimg/boot/config.txt`
 
 	dtparam=i2c_arm=on
 	dtparam=spi=on
@@ -72,7 +83,7 @@ Put the content of your public key(s) in /mnt/raspimg/root/.ssh/authorized_keys
 	start_x=1
 	gpu_mem=128
 
-/etc/modules
+Content of `/etc/modules`
 
 	i2c-dev
 	cuse
@@ -81,16 +92,43 @@ Put the content of your public key(s) in /mnt/raspimg/root/.ssh/authorized_keys
 
 ### Set up localization (keyboard and timezone)
 
-/mnt/raspimg/etc/timezone
+Content of `/mnt/raspimg/etc/timezone`
 
 	Europe/Berlin
 
-/mnt/raspimg/etc/default/keyboard
+Content of `/mnt/raspimg/etc/default/keyboard`
 
 	XKBLAYOUT="us"
+
+
+### Copy the installation script
+
+The following command is referred to the current directory (XTCD/docs)
+	
+	cp ../installation/install_script.sh /mnt/raspimg/root/
+	chmod a+x /mnt/raspimg/root/install_script.sh
+
+
+### Create the SD card
+
+**IMPORTANT**: replace /dev/sdX in the following command with whatever is your sd card
+
+	umount /mnt/raspimg/
+	dd if=/tmp/raspi/raspbian.img of=/dev/sdX bs=4M conv=fsync status=progress
+
 
 =======================================================
 
 ## On the Raspberry	
 
-To be documented...
+Put the SD card in and boot the system up.
+
+Log in as root, make sure the system is connected to the network, then run the install script:
+
+	/mnt/raspimg/root/install_script.sh
+
+After installation, adjust the config *.json files in /var/XTCD/system/config as needed.
+
+Reboot.
+
+Enjoy!

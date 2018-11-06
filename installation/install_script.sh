@@ -1,10 +1,16 @@
+#!/bin/bash
+
+# Update the system
+apt-get update
+apt-get -y upgrade
+
 # Install needed Python libraries
 
 apt-get -y install python-pip
 
 pip install RPiHTTPServer
 pip install pystache
-pip install netiface
+pip install netifaces
 pip install adafruit-pca9685
 pip install adafruit-ads1x15
 pip install Adafruit_DHT
@@ -41,7 +47,7 @@ apt-get -y install joe git i2c-tools
 cd /var/
 git clone https://github.com/mauntrelio/XTCD.git
 
-# change the config *.json files
+# change the config *.json files in /var/XTCD/system/config
 
 # script for startup in /etc/init.d/xtcd
 cp /var/XTCD/installation/config_resources/init-script /etc/init.d/xtcd
