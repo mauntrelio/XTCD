@@ -116,8 +116,12 @@ The following command is referred to the current directory (XTCD/docs)
 
 **IMPORTANT**: replace /dev/sdX in the following command with whatever is your sd card
 
-	umount /mnt/raspimg/
-	dd if=/tmp/raspi/raspbian.img of=/dev/sdX bs=4M conv=fsync status=progress
+```bash
+umount /mnt/raspimg/boot
+umount /mnt/raspimg
+losetup -D
+dd if=/tmp/raspi/raspbian.img of=/dev/sdX bs=4M conv=fsync status=progress
+```
 
 ----------------------------------------------------------------------------
 
