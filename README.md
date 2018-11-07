@@ -12,7 +12,7 @@ XTCD (XFEL Tunnel Camera Drone) is a project about the design, test and implemen
 - **scripts**: useful scripts
 - **system**: core part of the software, contains the Python scripts to run the web server and operate the drone. This is the part that is going to be installed on the Raspberry Pi.
 
-TODO: More specific information about the content of the **system** folder needs to be documented in detail.
+**TODO**: The content of the **system** folder needs to be documented in detail.
 
 ## Dependencies:
 
@@ -32,7 +32,7 @@ TODO: More specific information about the content of the **system** folder needs
 In order to create a RPi image to run XTCD, please read documentation in  
 docs/XTCD - How to create a new image.md
 
-TODO: Spefic configuration parameters of `system/config/*.json` files have to be documented yet.
+**TODO**: Spefic configuration parameters of `system/config/*.json` files have to be documented yet.
 
 ## Contributing:
 

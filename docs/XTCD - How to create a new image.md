@@ -26,6 +26,8 @@ mount /dev/loop0p2 /mnt/raspimg
 mount /dev/loop0p1 /mnt/raspimg/boot
 ```
 
+The previous commands are supposed to be run as root (or with sudo)
+
 ### Optional: avoid that the filesystem is immediately resized on boot
 
 - Edit cmdline.txt in boot partition by removing the argument
@@ -42,10 +44,11 @@ mount /dev/loop0p1 /mnt/raspimg/boot
 
 ### Setting up the Wi-Fi connection 
 
-Copy desy.pem certificate into `/mnt/raspimg/etc/ca-certificates/`
-Copy wpa-supplicant.conf into `/mnt/raspimg/etc/wpa-supplicant/`
+Copy `installation/config_resources/desy.pem` certificate into `/mnt/raspimg/etc/ca-certificates/`
 
-Change the copied wpa-supplicant.conf in order to set up the correct passwords.
+Copy `installation/config_resources/wpa-supplicant.conf` into `/mnt/raspimg/etc/wpa-supplicant/`
+
+Change the copied `wpa-supplicant.conf` in order to set up the correct passwords.
 
 ### Changing hostname
 
@@ -147,5 +150,5 @@ If the service does not start (e.g. not reachable via web browser) do the follow
 - Go to /var/XTCD/system
 - Manually launch the script main.py and check the output
 
-Be sure that the PWM board is connected and powered (this hardware component is needed for the system to start).
+Be sure that the PWM board is **connected and powered** (this hardware component is needed for the system to start).
 
