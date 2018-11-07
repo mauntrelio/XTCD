@@ -42,14 +42,14 @@ mount /dev/loop0p1 /mnt/raspimg/boot
 
 ### Setting up the Wi-Fi connection 
 
-Copy desy.pem certificate into /mnt/raspimg/etc/ca-certificates/
-Copy wpa-supplicant.conf into /mnt/raspimg/etc/wpa-supplicant/
+Copy desy.pem certificate into `/mnt/raspimg/etc/ca-certificates/`
+Copy wpa-supplicant.conf into `/mnt/raspimg/etc/wpa-supplicant/`
 
 Change the copied wpa-supplicant.conf in order to set up the correct passwords.
 
 ### Changing hostname
 
-Edit hostname in /mnt/raspimg/etc/hostname
+Edit hostname in `/mnt/raspimg/etc/hostname`
 
 ### Changing the root (and pi) password
 
@@ -59,7 +59,7 @@ Create a password for user pi using
 
 The salt value is a random string of your choice, anything will do.
 
-Change the /mnt/raspimg/etc/shadow file with the new password above. Delete the string between the 1st and 2nd ‘:’ colons on the line starting with "root" (and "pi"). Paste in the new value between these colons.
+Change the `/mnt/raspimg/etc/shadow` file with the new password above. Delete the string between the 1st and 2nd ‘:’ colons on the line starting with "root" (and "pi"). Paste in the new value between these colons.
 
 ### Activate SSH and set up ssh-keys
 
@@ -68,7 +68,7 @@ Place an empty file named 'ssh' onto the boot (FAT) partition
 
 	touch /mnt/raspimg/boot/ssh
 
-Put the content of your public key(s) in /mnt/raspimg/root/.ssh/authorized_keys
+Put the content of your public key(s) in `/mnt/raspimg/root/.ssh/authorized_keys`
 
 ### Activate modules
 
@@ -116,8 +116,7 @@ The following command is referred to the current directory (XTCD/docs)
 	umount /mnt/raspimg/
 	dd if=/tmp/raspi/raspbian.img of=/dev/sdX bs=4M conv=fsync status=progress
 
-
-=======================================================
+----------------------------------------------------------------------------
 
 ## On the Raspberry	
 
@@ -127,8 +126,26 @@ Log in as root, make sure the system is connected to the network, then run the i
 
 	/mnt/raspimg/root/install_script.sh
 
-After installation, adjust the config *.json files in /var/XTCD/system/config as needed.
+The software is installed into `/var/XTCD`
+
+After installation, adjust the config *.json files in `/var/XTCD/system/config` as needed.
 
 Reboot.
 
+Point your browser on the web address of the Raspberry Pi:
+
+	http://raspberry-ip-address:service-port/
+
 Enjoy!
+
+-----------------------------------------------------------------------------
+
+## Troubleshooting
+
+If the service does not start (e.g. not reachable via web browser) do the following:
+
+- Go to /var/XTCD/system
+- Manually launch the script main.py and check the output
+
+Be sure that the PWM board is connected and powered (this hardware component is needed for the system to start).
+

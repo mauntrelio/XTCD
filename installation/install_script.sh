@@ -28,8 +28,9 @@ apt-get -y update
 apt-get -y install uv4l uv4l-raspicam
 apt-get -y install uv4l-raspicam-extras
 apt-get -y install uv4l-server 
+apt-get -y install uv4l-uvc 
 
-# apt-get -y  uv4l-uvc uv4l-xscreen uv4l-mjpegstream uv4l-dummy uv4l-raspidisp
+#  uv4l-xscreen uv4l-mjpegstream uv4l-dummy uv4l-raspidisp
 
 service uv4l_raspicam restart
 
