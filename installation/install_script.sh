@@ -18,6 +18,10 @@ pip install Adafruit_DHT
 # those are installed into
 # usr/local/lib/python2.7/dist-packages
 
+# OpenCV Installation
+chmod o+x install_opencv.sh
+./install_opencv.sh
+
 # Install UV4L for camera
 
 curl http://www.linux-projects.org/listing/uv4l_repo/lpkey.asc | apt-key add -
