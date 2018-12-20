@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-__all__ = ['camera_controller']
+__all__ = ['controller', 'detector', 'navigator']
