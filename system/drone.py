@@ -8,7 +8,7 @@ import RPi.GPIO as GPIO
 
 class Drone:
 
-  def __init__(self, config):
+  def __init__(self, config, controller=None):
 
     self.config = config
     # TODO: status should be read directly interfacing to hardware
@@ -29,7 +29,9 @@ class Drone:
     self.GPIO_IN = {}
     self.GPIO_OUT = {}
 
-    # instantiate and initialise pwm controller
+    self.controller = controller
+
+    # instantiate and initialize pwm controller
     self.pwm = pca9685(address=int(config["I2C_ADDR"],16))
     self.pwm.set_pwm_freq(config["FREQUENCY"])
 
@@ -91,8 +93,11 @@ class Drone:
   # and it does not update the 
   # possible corresponding azimuth/altitude/motors statuses
   def set_pwm(self,**kwargs):
-    self.pwm.set_pwm(kwargs["channel"], 0, kwargs["value"])
-    self.status["PWM"][kwargs["channel"]] = kwargs["value"]    
+    channel = kwargs["channel"]
+    value = kwargs["value"]
+    self.controller.log("Setting PWM on channel %s to %s" % (channel, value))
+    self.pwm.set_pwm(channel, 0, value)
+    self.status["PWM"][channel] = value
 
   # move camera up
   def up(self):
@@ -147,17 +152,19 @@ class Drone:
 
   # set a gpio switch on
   def switch_on(self, pin):
-    GPIO.output(pin, 1)
-    self.status["GPIO_OUT"][pin] = 1
+    self.controller.log("Setting GPIO output %s to 0" % pin)
+    GPIO.output(pin, 0)
+    self.status["GPIO_OUT"][pin] = 0
 
   # set a gpio switch off
   def switch_off(self, pin):
-    GPIO.output(pin, 0)
-    self.status["GPIO_OUT"][pin] = 0
+    self.controller.log("Setting GPIO output %s to 1" % pin)
+    GPIO.output(pin, 1)
+    self.status["GPIO_OUT"][pin] = 1
   
   # toggle a gpio switch
   def switch(self, pin):
-    if self.status["GPIO_OUT"][pin] == 0: 
+    if self.status["GPIO_OUT"][pin] == 1: 
       self.switch_on(pin)
     else:
       self.switch_off(pin)
@@ -294,6 +301,7 @@ class Drone:
     # determine if button was pressed
     value = GPIO.input(pin)
     if value == GPIO.LOW:
+      self.controller.log("GPIO input %s was set to LOW" % pin)
       # stop motor, center camera, switch on light
       self.center()
       self.stop()
