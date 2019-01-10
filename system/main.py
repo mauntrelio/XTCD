@@ -26,37 +26,39 @@ class XTCD:
     # be sure to give exception if main config is missing or malformed
     web_config = json.load(open(web_config_file,'r'))
     # instantiate http server
-    self.web = RPiHTTPServer(main_config_file, WebHandler)
+    self.web = RPiHTTPServer(web_config_file, WebHandler)
 
     # quick access to config params
     self.config = self.web.server.config
 
     # parse drone config file
-    drone_config = {}
+    self.drone_config = {}
     
     if os.path.isfile(drone_config_file):
       try:
-        drone_config = json.load(open(drone_config_file,'r'))
+        self.drone_config = json.load(open(drone_config_file,'r'))
         # instantiate drone controller
-        self.drone = Drone(drone_config, controller = self) 
-      except:
-        print "Error parsing drone configuration file"
+        self.drone = Drone(self.drone_config, controller = self)
+      except Exception as e:
+        self.log("Error parsing drone configuration file")
+        self.log(str(e))
 
     # parse drone config file
-    sensors_config = {}
+    self.sensors_config = {}
     
     if os.path.isfile(sensors_config_file):
       try:
-        sensors_config = json.load(open(sensors_config_file,'r'))
+        self.sensors_config = json.load(open(sensors_config_file,'r'))
         # instantiate sensors controller
-        self.sensors = Sensors(sensors_config, controller = self) 
-      except:
-        print "Error parsing sensors configuration file"
+        self.sensors = Sensors(self.sensors_config, controller = self) 
+      except Exception as e:
+        self.log("Error parsing sensors configuration file")
+        self.log(str(e))
 
     # pass data to web server
     self.web.server.controller = self
     self.web.server.root_folder = basedir
-    self.web.server.main_config_file = main_config_file
+    self.web.server.main_config_file = web_config_file
     self.web.server.drone_config_file = drone_config_file  
     self.web.server.sensors_config_file = sensors_config_file
 
@@ -64,11 +66,11 @@ class XTCD:
   def start(self):
     self.log("Server listening on http://%s:%s" % (self.config["SERVER_ADDRESS"],self.config["SERVER_PORT"]))
     # start the keep alive thread if needed
-    if "KEEP_ALIVE" in drone_config:
-      self.drone.keep_alive(drone_config["KEEP_ALIVE"]["MIN"])
+    if "KEEP_ALIVE" in self.drone_config:
+      self.drone.keep_alive(self.drone_config["KEEP_ALIVE"]["MIN"])
     self.web.serve_forever()
 
-  # stop everything  
+  # stop everything 
   def stop(self):
     # stop the drone
     self.drone.stop()

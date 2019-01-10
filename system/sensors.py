@@ -14,8 +14,9 @@ class Sensors:
     self.status = {}
     for key in self.config.keys():
       self.status[key] = {
-        "last_value": None,
-        "last_reading": None,
+        "id": key,
+        "value": None,
+        "reading": None,
         "unit": self.config[key]["unit"]
       }
 
@@ -75,38 +76,45 @@ class Sensors:
     source = sensor["source"]
     params = sensor["source_params"]
 
-    # command line sensor
-    if source == "commandline":
-      value = subprocess.check_output(params["cmd"], shell=True)
+    try:
+      # command line sensor
+      if source == "commandline":
+        value = subprocess.check_output(params["cmd"], shell=True)
 
-    # ADS1 sensor
-    elif sensor["source"] == "ADS1":
-      reading = self.adc.read_adc(params["channel"], gain=self.adc_GAIN)
-      value = (reading / self.adc_MAX) * self.adc_MAX_VAL
+      # ADS1 sensor
+      elif sensor["source"] == "ADS1":
+        reading = self.adc.read_adc(params["channel"], gain=self.adc_GAIN)
+        value = (reading / self.adc_MAX) * self.adc_MAX_VAL
 
-    # # DHT sensor
-    # elif sensor["source"] == "DHT":
-    #   types = {'11': Adafruit_DHT.DHT11,
-    #             '22': Adafruit_DHT.DHT22,
-    #             '2302': Adafruit_DHT.AM2302 }
-      
-    #   if params["type"] in types:
-    #     sensor_type = types[params["type"]]
-    #     h, t = Adafruit_DHT.read_retry(sensor_type, params["pin"])
-    #     if params["index"] == 0:
-    #       value = h
-    #     else:
-    #       value = t
-      
-    # # BMP sensor
-    # elif sensor["source"] == "BMP":
-    #   if hasattr(self.bmp, params["method"]):
-    #     value = getattr(self.bmp, params["method"])()
-    #     value *= params["multiplier"]
+      # DHT sensor
+      elif sensor["source"] == "DHT":
+        types = {'11': Adafruit_DHT.DHT11,
+                  '22': Adafruit_DHT.DHT22,
+                  '2302': Adafruit_DHT.AM2302 }
+        
+        if params["type"] in types:
+          sensor_type = types[params["type"]]
+          h, t = Adafruit_DHT.read_retry(sensor_type, params["pin"])
+          if params["index"] == 0:
+            value = h
+          else:
+            value = t
+        
+      # BMP sensor
+      elif sensor["source"] == "BMP":
+        if hasattr(self.bmp, params["method"]):
+          value = getattr(self.bmp, params["method"])()
+          value *= params["multiplier"]
+
+    except Exception as e:
+      self.controller.log("Error reading sensor %s" % sensor_id)
+      self.controller.log(str(e))
+      value = None  
 
     if sensor["type"] == "float":
-      value = float(value)
-      value = round(value,2)
+      if value:
+        value = float(value)
+        value = round(value,2)
 
     self.status[sensor_id]["value"] = value
     # update time of last reading
