@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import Adafruit_PCA9685.PCA9685 as pca9685
-from lib.dcmotors import DCMotor_ESC, DCMotor_HAT
+from lib.dcmotors import DCMotor_ESC, DCMotor_HAT, DCMotor_L298N
 import time
 import threading
 import RPi.GPIO as GPIO
@@ -41,8 +41,8 @@ class Drone:
         self.MOTORS[motor["ID"]] = DCMotor_ESC(motor["CONFIG"], self)
       elif motor["TYPE"] == "HAT":
         self.MOTORS[motor["ID"]] = DCMotor_HAT(motor["CONFIG"], self)
-      # elif motor["TYPE"] == "L298N":
-      #   self.MOTORS[motor["ID"]] = DCMotor_L298N(motor["CONFIG"], self)
+      elif motor["TYPE"] == "L298N":
+         self.MOTORS[motor["ID"]] = DCMotor_L298N(motor["CONFIG"], self)
       else:
         self.log("Motor id %s: unknown type (%s)" % (motor["ID"], motor["TYPE"]))
 

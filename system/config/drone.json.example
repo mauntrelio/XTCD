@@ -15,10 +15,46 @@
         "ORIENTATION": -1, 
         "CHANNEL": 0, 
         "MIN": 160
-    }, 
+    },    
     "MOTORS": [
         {
-        "ID": "MOTOR_1",   
+        "ID": "MOTOR_1",
+        "TYPE": "L298N",
+        "CONFIG": {
+            "CHANNEL_PWM": 12,
+            "CHANNEL_IN1": 17,
+            "CHANNEL_IN2": 27,
+            "DIRECTION": 1, 
+            "SPEED_STEP": 200, 
+            "STARTUP_PULSE": 2, 
+            "CHANGE_DIR_PAUSE": 2,
+            "F.SPEED_MIN": 500, 
+            "F.SPEED_START": 600, 
+            "F.SPEED_MAX": 4000,
+            "B.SPEED_MIN": 500, 
+            "B.SPEED_START": 600, 
+            "B.SPEED_MAX": 4000
+            }
+        },
+        {
+        "ID": "MOTOR_2",
+        "TYPE": "HAT",
+        "CONFIG": {
+            "CHANNEL": 1,
+            "DIRECTION": 1, 
+            "SPEED_STEP": 5, 
+            "STARTUP_PULSE": 2, 
+            "CHANGE_DIR_PAUSE": 2,
+            "F.SPEED_MIN": 50, 
+            "F.SPEED_START": 55, 
+            "F.SPEED_MAX": 255,
+            "B.SPEED_MIN": 50, 
+            "B.SPEED_START": 55, 
+            "B.SPEED_MAX": 200
+            }
+        },
+        {
+        "ID": "MOTOR_3",   
         "TYPE": "ESC",
         "CONFIG": {
             "CHANNEL": 8,
@@ -39,7 +75,7 @@
             "SERVO.POS_F": 250
             }
         }
-    ], 
+    ],  
     "I2C_ADDR": "0x41", 
     "FREQUENCY": 60, 
     "MIN_STEP_POS": 5, 
