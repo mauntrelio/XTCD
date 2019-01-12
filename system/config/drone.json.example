@@ -1,59 +1,68 @@
 {
-  "I2C_ADDR": "0x41",
-  "FREQUENCY": 60,
-  "MIN_STEP_POS": 5,
-  "CHANGE_DIR_PAUSE": 2,
-  "STARTUP_PULSE": 2,
-  "AZIMUTH": {
-    "CHANNEL" : 0,
-    "ORIENTATION": -1,
-    "MIN": 160,
-    "MAX": 550,
-    "NEUTRAL": 410
-  },
-  "ALTITUDE": {
-    "CHANNEL" : 1,
-    "ORIENTATION": 1,
-    "MIN": 160,
-    "MAX": 550,
-    "NEUTRAL": 470
-  },
-  "MOTORS": [
-    {
-      "CHANNEL": 8,
-      "TYPE": "B",
-      "SPEED_STEP": 10,
-      "SPEED_STOP": 370,
-      "DIRECTION": 1,
-      "F": {
-        "SPEED_START": 400,
-        "SPEED_MIN": 390,
-        "SPEED_MAX": 420
-      },
-      "B": {
-        "SPEED_START": 345,
-        "SPEED_MIN": 350,
-        "SPEED_MAX": 280
-      },
-      "SERVO": {
-        "CHANNEL": 2,
-        "POS_F": 530,
-        "POS_B": 530,
-        "POS_N": 445
-      }
-    }
-  ],
-  "RELAYS": [
-      {
-        "CHANNEL": 7,
-        "ON": 0,
-        "OFF": 4095
-      }
-  ],
-  "KEEP_ALIVE": {
-    "CHANNEL": 5,
-    "INTERVAL": 5,
-    "MIN": 160,
-    "MAX": 500
-  }
+    "GPIO_OUT": [
+        {
+            "STARTUP": 1, 
+            "PIN": 19
+        }, 
+        {
+            "STARTUP": 1, 
+            "PIN": 26
+        }
+    ], 
+    "ALTITUDE": {
+        "MAX": 550, 
+        "NEUTRAL": 470, 
+        "ORIENTATION": -1, 
+        "CHANNEL": 0, 
+        "MIN": 160
+    }, 
+    "MOTORS": [
+        {
+        "ID": "MOTOR_1",   
+        "TYPE": "ESC",
+        "CONFIG": {
+            "CHANNEL": 8,
+            "DIRECTION": 1, 
+            "SPEED_STEP": 5, 
+            "SPEED_STOP": 370, 
+            "STARTUP_PULSE": 2, 
+            "CHANGE_DIR_PAUSE": 2,
+            "F.SPEED_MIN": 400, 
+            "F.SPEED_START": 405, 
+            "F.SPEED_MAX": 460,
+            "B.SPEED_MIN": 340, 
+            "B.SPEED_START": 335, 
+            "B.SPEED_MAX": 250,
+            "SERVO.CHANNEL": 2,
+            "SERVO.POS_B": 530, 
+            "SERVO.POS_N": 400, 
+            "SERVO.POS_F": 250
+            }
+        }
+    ], 
+    "I2C_ADDR": "0x41", 
+    "FREQUENCY": 60, 
+    "MIN_STEP_POS": 5, 
+    "AZIMUTH": {
+        "MAX": 550, 
+        "NEUTRAL": 410, 
+        "ORIENTATION": 1, 
+        "CHANNEL": 1, 
+        "MIN": 160
+    }, 
+    "GPIO_IN": [
+        {
+            "PULL": "UP", 
+            "BOUNCE": 100, 
+            "PIN": 17, 
+            "CALLBACK": "button_press"
+        }
+    ], 
+    "RELAYS": [
+        {
+            "ON": 0, 
+            "OFF": 4095, 
+            "CHANNEL": 6
+        }
+    ]
 }
