@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import Adafruit_PCA9685.PCA9685 as pca9685
-from lib.dcmotors import DCMotor_ESC
+from lib.dcmotors import DCMotor_ESC, DCMotor_HAT
 import time
 import threading
 import RPi.GPIO as GPIO
@@ -39,12 +39,12 @@ class Drone:
     for motor in config["MOTORS"]:
       if motor["TYPE"] == "ESC":
         self.MOTORS[motor["ID"]] = DCMotor_ESC(motor["CONFIG"], self)
-      # elif motor["TYPE"] == "HAT":
-      #   self.MOTORS[motor["ID"]] = DCMotor_HAT(motor["CONFIG"], self)
+      elif motor["TYPE"] == "HAT":
+        self.MOTORS[motor["ID"]] = DCMotor_HAT(motor["CONFIG"], self)
       # elif motor["TYPE"] == "L298N":
       #   self.MOTORS[motor["ID"]] = DCMotor_L298N(motor["CONFIG"], self)
       else:
-        self.controller.log("Motor id %s: unknown type (%s)" % (motor["ID"], motor["TYPE"]))
+        self.log("Motor id %s: unknown type (%s)" % (motor["ID"], motor["TYPE"]))
 
     # start up GPIO
     GPIO.setwarnings(False)
@@ -96,7 +96,7 @@ class Drone:
   def set_pwm(self,**kwargs):
     channel = kwargs["channel"]
     value = kwargs["value"]
-    self.controller.log("Setting PWM on channel %s to %s" % (channel, value))
+    self.log("Setting PWM on channel %s to %s" % (channel, value))
     self.pwm.set_pwm(channel, 0, value)
     self.status["PWM"][channel] = value
 
@@ -153,13 +153,13 @@ class Drone:
 
   # set a gpio switch on
   def switch_on(self, pin):
-    self.controller.log("Setting GPIO output %s to 0" % pin)
+    self.log("Setting GPIO output %s to 0" % pin)
     GPIO.output(pin, 0)
     self.status["GPIO_OUT"][pin] = 0
 
   # set a gpio switch off
   def switch_off(self, pin):
-    self.controller.log("Setting GPIO output %s to 1" % pin)
+    self.log("Setting GPIO output %s to 1" % pin)
     GPIO.output(pin, 1)
     self.status["GPIO_OUT"][pin] = 1
   
@@ -196,6 +196,11 @@ class Drone:
     for motor_id in motor_ids:
       self.MOTORS[motor_id].slowdown()
 
+  # stop ALL motors
+  def stop_all(self):
+    for motor_id in self.MOTORS:
+      self.MOTORS[motor_id].stop()
+
   # move a servo to keep pwm board alive (prevent powebank poweroff)
   def keep_alive(self, position):
 
@@ -208,6 +213,9 @@ class Drone:
       self.set_pwm(channel = self.KEEP_ALIVE["CHANNEL"], value = position)  
 
       threading.Timer(self.KEEP_ALIVE["INTERVAL"], self.keep_alive, [position]).start()  
+
+  def log(self, message):
+    self.controller.log(message)
 
   # example callback to GPIO event
   def button_press(self, pin):

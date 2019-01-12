@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import time
+from Raspi_MotorHAT import Raspi_MotorHAT, Raspi_DCMotor
 
 # This file implements DC Motor helper classes each one with a different controller.
 # Each DC Motor class must implement the following methods:
@@ -160,22 +161,82 @@ class DCMotor_ESC:
 class DCMotor_HAT:
 
     def __init__(self, config, controller):
-      pass
+      self.config = config
+      self.speed = 0
+      self.direction = "X"
+      self.controller = controller
+      mh = Raspi_MotorHAT(addr=0x6f)
+      self.motor = mh.getMotor(config["CHANNEL"])
+      self.motor.setSpeed(0)
+      self.motor.run(Raspi_MotorHAT.RELEASE)
+
+    def go(self, direction):
+      if self.direction != direction:
+        if self.direction != "N":
+          self.stop()
+          if "CHANGE_DIR_PAUSE" in self.config:
+            time.sleep(self.config["CHANGE_DIR_PAUSE"])
+      else:
+        return
+
+      self.direction = direction
+      if direction == "F":
+        self.motor.run(Raspi_MotorHAT.FORWARD)
+      else:
+        self.motor.run(Raspi_MotorHAT.BACKWARD)
+
+      self.speed = self.config[direction + ".SPEED_START"]
+      self.controller.log("Setting HAT speed motor to %s" % self.speed)
+      self.motor.setSpeed(self.speed)
+      
+      # let the motor start to win initial inertia
+      if "STARTUP_PULSE" in self.config:
+        time.sleep(self.config["STARTUP_PULSE"])
+      self.speed = self.config[direction + ".SPEED_MIN"]
+
+      self.controller.log("Setting HAT speed motor to %s" % self.speed)
+      self.motor.setSpeed(self.speed)
 
     def forward(self):
-      pass
+      self.controller.log("Moving forward")
+      if self.config["DIRECTION"] == 1:
+        self.go("F")
+      else:
+        self.go("B")
 
     def back(self):
-      pass
+      self.controller.log("Moving backward")
+      if self.config["DIRECTION"] == 1:
+        self.go("B")
+      else:
+        self.go("F")
 
     def stop(self):
-      pass
+      self.controller.log("Stopping HAT motor")
+      self.direction = "N"
+      self.speed = 0
+      self.motor.setSpeed(self.speed)
+      self.motor.run(Raspi_MotorHAT.RELEASE)
 
-    def speed_up(self):
-      pass
+    def speedup(self):
+      if self.direction == "N":
+        return
+
+      new_speed = self.speed + self.config["SPEED_STEP"]
+      if (new_speed <= self.config[self.direction + ".SPEED_MAX"]):
+        self.speed = new_speed
+        self.controller.log("Setting HAT speed motor to %s" % self.speed)
+        self.motor.setSpeed(self.speed)
     
-    def slow_down(self):
-      pass
+    def slowdown(self):
+      if self.direction == "N":
+        return
+
+      new_speed = self.speed - self.config["SPEED_STEP"]
+      if (new_speed >= self.config[self.direction + ".SPEED_MIN"]):
+        self.speed = new_speed
+        self.controller.log("Setting HAT speed motor to %s" % self.speed)
+        self.motor.setSpeed(self.speed)
     
 
 class DCMotor_L298N:
@@ -192,8 +253,8 @@ class DCMotor_L298N:
     def stop(self):
       pass
     
-    def speed_up(self):
+    def speedup(self):
       pass
 
-    def slow_down(self):
+    def slowdown(self):
       pass

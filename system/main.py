@@ -73,7 +73,7 @@ class XTCD:
   # stop everything 
   def stop(self):
     # stop the drone
-    self.drone.stop()
+    self.drone.stop_all()
     # stop the web server
     self.web.server.server_close()
 
