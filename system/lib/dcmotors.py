@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import time
+
 # This file implements DC Motor helper classes each one with a different controller.
 # Each DC Motor class must implement the following methods:
 #   - forward (move the motor forward)
@@ -51,58 +53,58 @@ class DCMotor_ESC:
   def __init__(self, config, controller):
     self.controller = controller
     self.config = config
-    self.direction = "N"
-    self.speed = config["SPEED_STOP"]
+    self.direction = "X"
+    self.stop()
 
-  def forward:
+  def forward(self):
     self.set_direction("F")
 
-  def back:
+  def back(self):
     self.set_direction("B")
 
-  def stop:
-    self.controller.set_pwm(channel = config["CHANNEL"], value = config["SPEED_STOP"])
+  def stop(self):
+    self.controller.set_pwm(channel = self.config["CHANNEL"], value = self.config["SPEED_STOP"])
     self.set_direction("N")
 
-  def speedup:
+  def speedup(self):
     if self.direction == "N":
       return
-
     # increment depends on direction
-    if config["DIRECTION"] == 1:
-      motor_dir = self.direction
-    else:
-      motor_dir = "F" if self.direction == "B" else "B"
+    motor_dir, step_dir = self.get_step() 
 
-    step_dir = -1 if motor_dir == "B"
+    pwm_value = self.speed + step_dir * self.config["SPEED_STEP"]
 
-    pwm_value = self.speed + step_dir * config["SPEED_STEP"]
-
-    if pwm_value * step_dir <= config[motor_dir + ".SPEED_MAX"] * step_dir:
+    if pwm_value * step_dir <= self.config[motor_dir + ".SPEED_MAX"] * step_dir:
       self.set_speed(pwm_value)
 
-  def slowdown:
+  def slowdown(self):
     if self.direction == "N":
       return
 
     # decrement depends on direction
+    motor_dir, step_dir = self.get_step()
+
+    pwm_value = self.speed - step_dir * self.config["SPEED_STEP"]
+
+    if pwm_value * step_dir >= self.config[motor_dir + ".SPEED_MIN"] * step_dir:
+      self.set_speed(pwm_value)
+
+  # get the step of increments depending on motor cabling and current direction
+  def get_step(self):
     step_dir = 1 
     motor_dir = "F"
-    if config["DIRECTION"] == 1:
+    if self.config["DIRECTION"] == 1:
       motor_dir = self.direction
-    else:
-      motor_dir = "F" if self.direction == "B" else "B"
-    
-    step_dir = -1 if motor_dir == "B"
+    elif self.direction != "B":
+      motor_dir = "B"
 
-    pwm_value = self.speed - step_dir * config["SPEED_STEP"]
+    if motor_dir == "B": step_dir = -1
 
-    if pwm_value * step_dir >= config[motor_dir + ".SPEED_MIN"] * step_dir:
-      self.set_speed(pwm_value)
+    return motor_dir, step_dir
 
   # Set the speed of the motor      
   def set_speed(self, speed):
-    self.controller.set_pwm(channel = config["CHANNEL"], value = speed)
+    self.controller.set_pwm(channel = self.config["CHANNEL"], value = speed)
     self.speed = speed
 
   def set_direction(self, direction):
@@ -110,32 +112,33 @@ class DCMotor_ESC:
     if self.direction == direction:
       return
 
+    # access config shorter
+    config = self.config  
+
     # access to speed parameter x direction depending on cabling polarity:
     motor_dir = direction # by default we access the parameters of the provided direction
     if config["DIRECTION"] == -1: 
       # if the motor is cabled reversed we access the parameters of the opposite direction
       motor_dir = "F" if direction == "B" else "B"
 
-    # access config shorter
-    config = self.config  
-
     # As a first step, we stop the motor
     self.set_speed(config["SPEED_STOP"])
+    
     if direction == "N":
       # do we have a servo controlling a switch?
       if "SERVO.CHANNEL" in config:
         self.controller.set_pwm(channel = config["SERVO.CHANNEL"], value = config["SERVO.POS_N"])
-          self.direction = "N"
+      self.direction = "N"
       
     # only start moving when requested direction is back or forward
-    if direction != "N":
+    else:
       # do we have a servo controlling a power switch?
       if "SERVO.CHANNEL" in config:
         servo_position = config["SERVO.POS_%s" % motor_dir]
         self.controller.set_pwm(channel = config["SERVO.CHANNEL"], value = servo_position)
         
       # if we are switching direction (from B to F or viceversa)
-      if self.direction != "N"
+      if self.direction != "N":
         # wait after switching
         if "CHANGE_DIR_PAUSE" in config:
           time.sleep(config["CHANGE_DIR_PAUSE"])
@@ -144,41 +147,53 @@ class DCMotor_ESC:
       self.direction = direction
 
       # put the motor to START speed
-      self.set_speed(config[motor_dir]["SPEED_START"])
+      self.set_speed(config[motor_dir + ".SPEED_START"])
 
       # let the motor start to win initial inertia
       if "STARTUP_PULSE" in config:
         time.sleep(config["STARTUP_PULSE"])
 
       # put the motor to the minimum speed
-      self.set_speed(config[motor_dir]["SPEED_MIN"])
+      self.set_speed(config[motor_dir + ".SPEED_MIN"])
 
 
 class DCMotor_HAT:
 
     def __init__(self, config, controller):
+      pass
 
     def forward(self):
+      pass
 
     def back(self):
+      pass
 
     def stop(self):
-    
+      pass
+
     def speed_up(self):
-
+      pass
+    
     def slow_down(self):
-
+      pass
+    
 
 class DCMotor_L298N:
 
     def __init__(self, config, controller):
-
+      pass
+    
     def forward(self):
-
+      pass
+    
     def back(self):
+      pass
 
     def stop(self):
+      pass
     
     def speed_up(self):
+      pass
 
     def slow_down(self):
+      pass

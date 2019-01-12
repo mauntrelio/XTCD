@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import Adafruit_PCA9685.PCA9685 as pca9685
+from lib.dcmotors import DCMotor_ESC
 import time
 import threading
 import RPi.GPIO as GPIO
@@ -13,7 +14,6 @@ class Drone:
     self.config = config
     # TODO: status should be read directly interfacing to hardware
     self.status = {
-      "SPEEDS": {}, 
       "RELAYS": {}, 
       "PWM": [None,None,None,None,
               None,None,None,None,
@@ -23,7 +23,7 @@ class Drone:
       "GPIO_IN": {}              
       }
 
-    self.MOTORS = config["MOTORS"] if "MOTORS" in config else []
+    self.MOTORS = {}
     self.RELAYS = config["RELAYS"] if "RELAYS" in config else []
     self.KEEP_ALIVE = config["KEEP_ALIVE"] if "KEEP_ALIVE" in config else False
     self.GPIO_IN = {}
@@ -36,14 +36,15 @@ class Drone:
     self.pwm.set_pwm_freq(config["FREQUENCY"])
 
     # put motors to stop position
-    for motor in self.MOTORS:
-      self.set_pwm(channel = motor["CHANNEL"], value = motor["SPEED_STOP"])
-      self.status["SPEEDS"][motor["CHANNEL"]] = motor["SPEED_STOP"]
-      # put direction switches to neutral position
-      if motor["SERVO"]:
-        self.set_pwm(channel = motor["SERVO"]["CHANNEL"], value = motor["SERVO"]["POS_N"])
-    
-    self.status["DIRECTION"] = "N"
+    for motor in config["MOTORS"]:
+      if motor["TYPE"] == "ESC":
+        self.MOTORS[motor["ID"]] = DCMotor_ESC(motor["CONFIG"], self)
+      # elif motor["TYPE"] == "HAT":
+      #   self.MOTORS[motor["ID"]] = DCMotor_HAT(motor["CONFIG"], self)
+      # elif motor["TYPE"] == "L298N":
+      #   self.MOTORS[motor["ID"]] = DCMotor_L298N(motor["CONFIG"], self)
+      else:
+        self.controller.log("Motor id %s: unknown type (%s)" % (motor["ID"], motor["TYPE"]))
 
     # start up GPIO
     GPIO.setwarnings(False)
@@ -91,7 +92,7 @@ class Drone:
   # generic set pwm method 
   # please note that this method completely bypass any check
   # and it does not update the 
-  # possible corresponding azimuth/altitude/motors statuses
+  # possible corresponding azimuth/altitude statuses
   def set_pwm(self,**kwargs):
     channel = kwargs["channel"]
     value = kwargs["value"]
@@ -169,119 +170,31 @@ class Drone:
     else:
       self.switch_off(pin)
 
-  # start moving forward
-  def forward(self):
-    self.set_direction("F")
+  # start moving one or more motors forward
+  def forward(self, *motor_ids):
+    for motor_id in motor_ids:
+      self.MOTORS[motor_id].forward()
 
-  # start moving backward
-  def back(self):
-    self.set_direction("B")
+  # start moving one or more motors backward
+  def back(self, *motor_ids):
+    for motor_id in motor_ids:
+      self.MOTORS[motor_id].back()
 
-  # Stop
-  def stop(self):
+  # Stop one or more motors
+  def stop(self, *motor_ids):
     # put motors to stop position
-    for motor in self.MOTORS:
-      self.set_pwm(channel = motor["CHANNEL"], value = motor["SPEED_STOP"])
-      self.status["SPEEDS"][motor["CHANNEL"]] = motor["SPEED_STOP"]
+    for motor_id in motor_ids:
+      self.MOTORS[motor_id].stop()
     
-    self.set_direction("N")
-
   # Speed up
-  def speedup(self):
-
-    if self.status["DIRECTION"] == "N":
-      return
-
-    for motor in self.MOTORS:
-      step_dir = 1 # speed up is increase speed by default
-      motor_dir = "F"
-      # brush motor: increment depends on direction
-      if motor["TYPE"] == "B":
-        if motor["DIRECTION"] == 1:
-          motor_dir = self.status["DIRECTION"]
-        else:
-          motor_dir = "F" if self.status["DIRECTION"] == "B" else "B"
-        step_dir = 1 if motor_dir == "F" else -1
-
-      pwm_value = self.status["SPEEDS"][motor["CHANNEL"]] + step_dir * motor["SPEED_STEP"]
-
-      if pwm_value * step_dir <= motor[motor_dir]["SPEED_MAX"] * step_dir:
-        self.set_speed(motor["CHANNEL"], pwm_value)
+  def speedup(self, *motor_ids):
+    for motor_id in motor_ids:
+      self.MOTORS[motor_id].speedup()
 
   # Slow down
-  def slowdown(self):
-
-    if self.status["DIRECTION"] == "N":
-      return
-      
-    for motor in self.MOTORS:
-      step_dir = 1 # slow down is decrease speed by default
-      motor_dir = "F"
-      # brush motor: increment depends on direction
-      if motor["TYPE"] == "B":
-        if motor["DIRECTION"] == 1:
-          motor_dir = self.status["DIRECTION"]
-        else:
-          motor_dir = "F" if self.status["DIRECTION"] == "B" else "B"
-        step_dir = 1 if motor_dir == "F" else -1
-
-      pwm_value = self.status["SPEEDS"][motor["CHANNEL"]] - step_dir * motor["SPEED_STEP"]
-
-      if pwm_value * step_dir >= motor[motor_dir]["SPEED_MIN"] * step_dir:
-        self.set_speed(motor["CHANNEL"], pwm_value)
-
-  # Set the speed of a motor      
-  def set_speed(self, motor, speed):
-    self.set_pwm(channel = motor, value = speed)
-    self.status["SPEEDS"][motor] = speed
-
-  # move forward / backward / neutral
-  def set_direction(self, direction):
-    if self.status["DIRECTION"] != direction:
-      # stop the motors
-      for motor in self.MOTORS:
-        self.set_speed(motor["CHANNEL"], motor["SPEED_STOP"])
-        # if brushless or neutral position requested: set direction switches in neutral position
-        if motor["TYPE"] == "L" or direction == "N":
-          if motor["SERVO"]:
-            self.set_pwm(channel = motor["SERVO"]["CHANNEL"], value = motor["SERVO"]["POS_N"])
-          self.status["DIRECTION"] = "N"
-      
-      # only start moving when requested direction is back or forward
-      if direction != "N":
-        for motor in self.MOTORS:
-          if motor["SERVO"]:
-            motor_dir = "F"
-            if motor["DIRECTION"] == -1:
-              motor_dir = "F" if direction == "B" else "B"
-            # brushless: wait before switching
-            if motor["TYPE"] == "L":
-              time.sleep(self.config["CHANGE_DIR_PAUSE"])
-            position =  motor["SERVO"]["POS_%s" % motor_dir]   
-            self.set_pwm(channel = motor["SERVO"]["CHANNEL"], value = position)            
-            # brush: wait after switching
-            if motor["TYPE"] == "B":
-              time.sleep(self.config["CHANGE_DIR_PAUSE"])
-
-        self.status["DIRECTION"] = direction
-
-        # put the motors to START speed
-        for motor in self.MOTORS:
-          motor_dir = direction
-          if motor["DIRECTION"] == -1:
-            motor_dir = "F" if direction == "B" else "B"
-
-          self.set_speed(motor["CHANNEL"], motor[motor_dir]["SPEED_START"])
-
-        time.sleep(self.config["STARTUP_PULSE"])
-
-        # put the motors to minimum speed
-        for motor in self.MOTORS:
-          motor_dir = direction
-          if motor["DIRECTION"] == -1:
-            motor_dir = "F" if direction == "B" else "B"
-          
-          self.set_speed(motor["CHANNEL"], motor[motor_dir]["SPEED_MIN"])
+  def slowdown(self, *motor_ids):
+    for motor_id in motor_ids:
+      self.MOTORS[motor_id].slowdown()
 
   # move a servo to keep pwm board alive (prevent powebank poweroff)
   def keep_alive(self, position):
