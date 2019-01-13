@@ -160,27 +160,27 @@ class WebHandler(RPiHTTPRequestHandler):
 
   # POST /forward
   def forward(self):
-    self.server.controller.drone.forward("MOTOR_1")
+    self.server.controller.drone.forward("MOTOR_1","MOTOR_2","MOTOR_3")
     self.render_template()
 
   # POST /back
   def back(self):
-    self.server.controller.drone.back("MOTOR_1")
+    self.server.controller.drone.back("MOTOR_1","MOTOR_2","MOTOR_3")
     self.render_template()
 
   # POST /stop
   def stop(self):
-    self.server.controller.drone.stop("MOTOR_1")
+    self.server.controller.drone.stop("MOTOR_1","MOTOR_2","MOTOR_3")
     self.render_template()
 
   # POST /speedup
   def speedup(self):
-    self.server.controller.drone.speedup("MOTOR_1")
+    self.server.controller.drone.speedup("MOTOR_1","MOTOR_2","MOTOR_3")
     self.render_template()
 
   # POST /slowdown
   def slowdown(self):
-    self.server.controller.drone.slowdown("MOTOR_1")
+    self.server.controller.drone.slowdown("MOTOR_1","MOTOR_2","MOTOR_3")
     self.render_template()
 
   # POST /set_pwm

@@ -196,10 +196,11 @@ class Drone:
     for motor_id in motor_ids:
       self.MOTORS[motor_id].slowdown()
 
-  # stop ALL motors
+  # stop ALL motors and clean up GPIO
   def stop_all(self):
     for motor_id in self.MOTORS:
       self.MOTORS[motor_id].stop()
+    GPIO.cleanup()
 
   # move a servo to keep pwm board alive (prevent powebank poweroff)
   def keep_alive(self, position):

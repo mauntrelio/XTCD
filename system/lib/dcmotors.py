@@ -109,14 +109,14 @@ class DCMotor_ESC:
     self.go("B")
 
   def stop(self):
-    self.controller.set_pwm(channel = self.config["CHANNEL"], value = self.config["SPEED_STOP"])
+    self.controller.log("Stopping")
     self.go("N")
 
   def speedup(self):
     if self.direction == "N":
       return
     # increment depends on direction
-    motor_dir, step_dir = self.get_step() 
+    motor_dir, step_dir = self.get_step(self.direction) 
 
     pwm_value = self.speed + step_dir * self.config["SPEED_STEP"]
 
@@ -127,7 +127,7 @@ class DCMotor_ESC:
     if self.direction == "N":
       return
     # decrement depends on direction
-    motor_dir, step_dir = self.get_step()
+    motor_dir, step_dir = self.get_step(self.direction)
 
     pwm_value = self.speed - step_dir * self.config["SPEED_STEP"]
 
@@ -135,12 +135,12 @@ class DCMotor_ESC:
       self.set_speed(pwm_value)
 
   # get the step of increments depending on motor cabling and current direction
-  def get_step(self):
+  def get_step(self, direction):
     step_dir = 1 
     motor_dir = "F"
     if self.config["DIRECTION"] == 1:
-      motor_dir = self.direction
-    elif self.direction != "B":
+      motor_dir = direction
+    elif direction != "B":
       motor_dir = "B"
 
     if motor_dir == "B": step_dir = -1
@@ -161,7 +161,7 @@ class DCMotor_ESC:
     config = self.config  
 
     # access to speed parameter x direction depending on cabling polarity:
-    motor_dir, step_dir = self.get_step()
+    motor_dir, step_dir = self.get_step(direction)
 
     # As a first step, we stop the motor
     self.set_speed(config["SPEED_STOP"])
@@ -228,7 +228,7 @@ class DCMotor_HAT:
         return
 
       # access to speed parameter x direction depending on cabling polarity:
-      motor_dir = self.get_motor_dir()
+      motor_dir = self.get_motor_dir(direction)
 
       self.direction = direction
       if motor_dir == "F":
@@ -267,7 +267,7 @@ class DCMotor_HAT:
       if self.direction == "N":
         return
       new_speed = self.speed + self.config["SPEED_STEP"]
-      if (new_speed <= self.config[self.get_motor_dir() + ".SPEED_MAX"]):
+      if (new_speed <= self.config[self.get_motor_dir(self.direction) + ".SPEED_MAX"]):
         self.speed = new_speed
         self.controller.log("Setting HAT speed motor to %s" % self.speed)
         self.motor.setSpeed(self.speed)
@@ -276,7 +276,7 @@ class DCMotor_HAT:
       if self.direction == "N":
         return
       new_speed = self.speed - self.config["SPEED_STEP"]
-      if (new_speed >= self.config[self.get_motor_dir() + ".SPEED_MIN"]):
+      if (new_speed >= self.config[self.get_motor_dir(self.direction) + ".SPEED_MIN"]):
         self.speed = new_speed
         self.controller.log("Setting HAT speed motor to %s" % self.speed)
         self.motor.setSpeed(self.speed)
@@ -300,7 +300,6 @@ class DCMotor_L298N:
         motor_dir = "F" if direction == "B" else "B"
       return motor_dir     
 
-
     def set_speed(self, speed):
       self.speed = speed
       self.controller.set_pwm(channel = self.config["CHANNEL_PWM"], value = self.speed)
@@ -317,7 +316,7 @@ class DCMotor_L298N:
       config = self.config
 
       # access to speed parameter x direction depending on cabling polarity:
-      motor_dir = self.get_motor_dir()
+      motor_dir = self.get_motor_dir(direction)
 
       # As a first step, we stop the motor
       self.stop()
@@ -365,12 +364,12 @@ class DCMotor_L298N:
       if self.direction == "N":
         return
       new_speed = self.speed + self.config["SPEED_STEP"]
-      if (new_speed <= self.config[self.get_motor_dir() + ".SPEED_MAX"]):
+      if (new_speed <= self.config[self.get_motor_dir(self.direction) + ".SPEED_MAX"]):
         self.set_speed(new_speed)      
 
     def slowdown(self):
       if self.direction == "N":
         return
       new_speed = self.speed - self.config["SPEED_STEP"]
-      if (new_speed >= self.config[self.get_motor_dir() + ".SPEED_MIN"]):
+      if (new_speed >= self.config[self.get_motor_dir(self.direction) + ".SPEED_MIN"]):
         self.set_speed(new_speed)
