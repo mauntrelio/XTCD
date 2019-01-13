@@ -17,6 +17,7 @@ import RPi.GPIO as GPIO
 # Implements a brush motor controlled via an ESC connected to a PCA9685 PWM signal generator
 # Expects the following parameters in init:
 #   config: a configuration dictionary for the motor with the following parameters:
+#     ID:               a string identifying the motor
 #     CHANNEL:          channel of the PWM controller where the ESC is connected
 #     DIRECTION:        adjust direction according to the polarity of motor cabling 
 #                       (1 or -1, to control that what you mean "forward" is what you expect)
@@ -48,6 +49,7 @@ import RPi.GPIO as GPIO
 # Implements a brush motor controlled via the Raspberry Stepper Motor HAT
 # Expects the following parameters in init:
 #   config: a configuration dictionary for the motor with the following parameters:
+#     ID:               a string identifying the motor
 #     CHANNEL:          channel of the PWM Stepper Motor HAT where the motor is connected
 #     DIRECTION:        adjust direction according to the polarity of motor cabling 
 #                       (1 or -1, to control that what you mean "forward" is what you expect)
@@ -71,6 +73,7 @@ import RPi.GPIO as GPIO
 # This class has direct access to GPIO!
 # Expects the following parameters in init:
 #   config: a configuration dictionary for the motor with the following parameters:
+#     ID:               a string identifying the motor
 #     CHANNEL_PWM:      channel of the PWM controller where the EN channel is connected
 #     CHANNEL_IN1:      GPIO pin where the IN1 channel is connected
 #     CHANNEL_IN2:      GPIO pin where the IN2 channel is connected
@@ -95,21 +98,22 @@ import RPi.GPIO as GPIO
 class DCMotor_ESC:
 
   def __init__(self, config, controller):
-    self.controller = controller
+    self.id = config["ID"]
     self.config = config
+    self.controller = controller
     self.direction = "X"
     self.stop()
 
   def forward(self):
-    self.controller.log("Moving forward")
+    self.controller.log("%s: moving forward" % self.id)
     self.go("F")
 
   def back(self):
-    self.controller.log("Moving backward")
+    self.controller.log("%s: moving backward" % self.id)
     self.go("B")
 
   def stop(self):
-    self.controller.log("Stopping")
+    self.controller.log("%s: stopping!" % self.id)
     self.go("N")
 
   def speedup(self):
@@ -201,14 +205,14 @@ class DCMotor_ESC:
 class DCMotor_HAT:
 
     def __init__(self, config, controller):
+      self.id = config["ID"]
       self.config = config
       self.speed = 0
-      self.direction = "N"
+      self.direction = "X"
       self.controller = controller
       mh = Raspi_MotorHAT(addr=0x6f)
       self.motor = mh.getMotor(config["CHANNEL"])
-      self.motor.setSpeed(0)
-      self.motor.run(Raspi_MotorHAT.RELEASE)
+      self.stop()
 
     def get_motor_dir(self, direction):
      # access to speed parameter x direction depending on cabling polarity:
@@ -237,7 +241,7 @@ class DCMotor_HAT:
         self.motor.run(Raspi_MotorHAT.BACKWARD)
 
       self.speed = self.config[motor_dir + ".SPEED_START"]
-      self.controller.log("Setting HAT speed motor to %s" % self.speed)
+      self.controller.log("%s: setting speed to %s" % (self.id, self.speed))
       self.motor.setSpeed(self.speed)
       
       # let the motor start to win initial inertia
@@ -245,19 +249,19 @@ class DCMotor_HAT:
         time.sleep(self.config["STARTUP_PULSE"])
       self.speed = self.config[motor_dir + ".SPEED_MIN"]
 
-      self.controller.log("Setting HAT speed motor to %s" % self.speed)
+      self.controller.log("%s: setting speed to %s" % (self.id, self.speed))
       self.motor.setSpeed(self.speed)
 
     def forward(self):
-      self.controller.log("Moving forward")
+      self.controller.log("%s: moving forward" % self.id)
       self.go("F")
 
     def back(self):
-      self.controller.log("Moving backward")
+      self.controller.log("%s: moving backward" % self.id)
       self.go("B")
 
     def stop(self):
-      self.controller.log("Stopping HAT motor")
+      self.controller.log("%s: stopping" % self.id)
       self.direction = "N"
       self.speed = 0
       self.motor.setSpeed(self.speed)
@@ -284,6 +288,7 @@ class DCMotor_HAT:
 class DCMotor_L298N:
 
     def __init__(self, config, controller):
+      self.id = config["ID"]
       self.config = config
       self.controller = controller
       self.direction = "X"
@@ -346,14 +351,15 @@ class DCMotor_L298N:
         self.set_speed(config[motor_dir + ".SPEED_MIN"])
       
     def forward(self):
-      self.controller.log("Moving forward")
+      self.controller.log("%s: moving forward" % self.id)
       self.go("F")
 
     def back(self):
-      self.controller.log("Moving backward")
+      self.controller.log("%s: moving backward" % self.id)
       self.go("B")
 
     def stop(self):
+      self.controller.log("%s: stopping" % self.id)
       self.direction = "N"
       self.speed = 0
       GPIO.output(self.config["CHANNEL_IN1"], GPIO.LOW)

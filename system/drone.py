@@ -35,14 +35,14 @@ class Drone:
     self.pwm = pca9685(address=int(config["I2C_ADDR"],16))
     self.pwm.set_pwm_freq(config["FREQUENCY"])
 
-    # put motors to stop position
+    # instantiate motors controllers
     for motor in config["MOTORS"]:
       if motor["TYPE"] == "ESC":
-        self.MOTORS[motor["ID"]] = DCMotor_ESC(motor["CONFIG"], self)
+        self.MOTORS[motor["ID"]] = DCMotor_ESC(motor, self)
       elif motor["TYPE"] == "HAT":
-        self.MOTORS[motor["ID"]] = DCMotor_HAT(motor["CONFIG"], self)
+        self.MOTORS[motor["ID"]] = DCMotor_HAT(motor, self)
       elif motor["TYPE"] == "L298N":
-         self.MOTORS[motor["ID"]] = DCMotor_L298N(motor["CONFIG"], self)
+         self.MOTORS[motor["ID"]] = DCMotor_L298N(motor, self)
       else:
         self.log("Motor id %s: unknown type (%s)" % (motor["ID"], motor["TYPE"]))
 
@@ -172,34 +172,42 @@ class Drone:
 
   # start moving one or more motors forward
   def forward(self, *motor_ids):
+    # forward operation may require some delay: manage operation in one single thread per motor
     for motor_id in motor_ids:
-      self.MOTORS[motor_id].forward()
+      threading.Thread(target=self.MOTORS[motor_id].forward).start()
+      # self.MOTORS[motor_id].forward()
 
   # start moving one or more motors backward
   def back(self, *motor_ids):
+    # backward operation may require some delay: manage operation in one single thread per motor
     for motor_id in motor_ids:
-      self.MOTORS[motor_id].back()
+      threading.Thread(target=self.MOTORS[motor_id].back).start()
+      # self.MOTORS[motor_id].back()
 
   # Stop one or more motors
   def stop(self, *motor_ids):
     # put motors to stop position
     for motor_id in motor_ids:
-      self.MOTORS[motor_id].stop()
+      threading.Thread(target=self.MOTORS[motor_id].stop).start()
+      # self.MOTORS[motor_id].stop()
     
   # Speed up
   def speedup(self, *motor_ids):
     for motor_id in motor_ids:
-      self.MOTORS[motor_id].speedup()
+      threading.Thread(target=self.MOTORS[motor_id].speedup).start()
+      # self.MOTORS[motor_id].speedup()
 
   # Slow down
   def slowdown(self, *motor_ids):
     for motor_id in motor_ids:
-      self.MOTORS[motor_id].slowdown()
+      threading.Thread(target=self.MOTORS[motor_id].slowdown).start()
+      # self.MOTORS[motor_id].slowdown()
 
   # stop ALL motors and clean up GPIO
   def stop_all(self):
     for motor_id in self.MOTORS:
-      self.MOTORS[motor_id].stop()
+      threading.Thread(target=self.MOTORS[motor_id].stop).start()
+      # self.MOTORS[motor_id].stop()
     GPIO.cleanup()
 
   # move a servo to keep pwm board alive (prevent powebank poweroff)
