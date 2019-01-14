@@ -58,7 +58,7 @@ class XTCD:
     # pass data to web server
     self.web.server.controller = self
     self.web.server.root_folder = basedir
-    self.web.server.main_config_file = web_config_file
+    self.web.server.web_config_file = web_config_file
     self.web.server.drone_config_file = drone_config_file  
     self.web.server.sensors_config_file = sensors_config_file
 
