@@ -54,8 +54,8 @@ class WebHandler(RPiHTTPRequestHandler):
   # GET /config
   def show_config(self):
     self.tpl_vars["WEB_CONFIG"] = json.dumps(self.config, indent = 4)
-    self.tpl_vars["DRONE_CONFIG"] = json.dumps(self.server.drone.config, indent = 4)
-    self.tpl_vars["SENSORS_CONFIG"] = json.dumps(self.server.sensors.config, indent = 4)
+    self.tpl_vars["DRONE_CONFIG"] = json.dumps(self.server.controller.drone.config, indent = 4)
+    self.tpl_vars["SENSORS_CONFIG"] = json.dumps(self.server.controller.sensors.config, indent = 4)
     self.render_template(template="config.html")
 
   # GET /sensor?id=sensor_id
@@ -160,27 +160,37 @@ class WebHandler(RPiHTTPRequestHandler):
 
   # POST /forward
   def forward(self):
-    self.server.controller.drone.forward()
+    params = self.form["params"].value
+    motors = params.split(",")
+    self.server.controller.drone.forward(*motors)
     self.render_template()
 
   # POST /back
   def back(self):
-    self.server.controller.drone.back()
+    params = self.form["params"].value
+    motors = params.split(",")
+    self.server.controller.drone.back(*motors)
     self.render_template()
 
   # POST /stop
   def stop(self):
-    self.server.controller.drone.stop()    
+    params = self.form["params"].value
+    motors = params.split(",")
+    self.server.controller.drone.stop(*motors)
     self.render_template()
 
   # POST /speedup
   def speedup(self):
-    self.server.controller.drone.speedup()  
+    params = self.form["params"].value
+    motors = params.split(",")
+    self.server.controller.drone.speedup(*motors)
     self.render_template()
 
   # POST /slowdown
   def slowdown(self):
-    self.server.controller.drone.slowdown()  
+    params = self.form["params"].value
+    motors = params.split(",")
+    self.server.controller.drone.slowdown(*motors)
     self.render_template()
 
   # POST /set_pwm

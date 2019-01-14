@@ -3,8 +3,8 @@
 
 import Adafruit_ADS1x15
 import time
-import RPi.GPIO as GPIO
 import subprocess
+import traceback
 
 class Sensors:
   def __init__(self, config, controller=None):
@@ -108,7 +108,7 @@ class Sensors:
 
     except Exception as e:
       self.controller.log("Error reading sensor %s" % sensor_id)
-      self.controller.log(str(e))
+      self.controller.log(traceback.format_exc())
       value = None  
 
     if sensor["type"] == "float":
