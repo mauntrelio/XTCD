@@ -6,6 +6,7 @@ from shutil import copyfile
 import netifaces as ni
 import socket
 import time
+import threading
 import os
 import json
 import pystache
@@ -218,11 +219,15 @@ class WebHandler(RPiHTTPRequestHandler):
   def sequence_pwm(self):
     params = self.form["params"].value
     sequence = params.split("|")
+    threading.Thread(target=self.__sequence_pwm, args = [sequence]).start()
+    self.render_template()
+
+  # setting pwm sequence asynchronously
+  def __sequence_pwm(self, sequence):
     for command in sequence:
-      (channel,value,delay) = command.split(",") 
+      (channel,value,delay) = command.split(",")
       self.server.controller.drone.set_pwm(channel = int(channel), value = int(value))
       time.sleep(int(delay)/1000.0)  
-    self.render_template()
 
   def render_template(self, template="home.html"):
 

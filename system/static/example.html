@@ -17,7 +17,9 @@
 
     			<button class="btn btn-danger drone-control" data-command="set_pwm" data-channel="5" data-value="350">Test something</button>
 
-          <button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm" data-params="5,200,20|2,160,100|1,250,0|0,180,0">Test sequence PWM</button>
+          <button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm" data-params="5,200,20|2,160,100|1,250,0|0,180,0">Test sequence PWM on different channels</button>
+
+          <button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm" data-params="4,200,20|4,350,1000|4,560,1000|4,180,1000|4,400,1000|4,50,1000|4,500,1000|4,50,0">Test sequence PWM on channel 4</button>
 
   		</div>
 		</div>
