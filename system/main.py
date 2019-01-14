@@ -10,7 +10,8 @@ import time
 import os
 import json
 import traceback
-
+import atexit
+import signal
 
 # class coordinating the components:
 # - web server
@@ -88,8 +89,14 @@ if __name__ == '__main__':
   basedir = os.path.dirname(os.path.abspath(__file__))
   xtcd = XTCD(basedir)
 
+  def handle_exit(*args):
+    xtcd.stop()
+
+  atexit.register(handle_exit)
+  signal.signal(signal.SIGTERM, handle_exit)
+  signal.signal(signal.SIGINT, handle_exit)
+
   try:
     xtcd.start()
   except KeyboardInterrupt:
-    pass
     xtcd.stop()
