@@ -9,6 +9,7 @@ import threading
 import time
 import os
 import json
+from collections import OrderedDict
 import traceback
 import atexit
 import signal
@@ -25,20 +26,17 @@ class XTCD:
     drone_config_file = os.path.join(basedir,"config","drone.json")
     sensors_config_file = os.path.join(basedir,"config","sensors.json")
 
-    # be sure to give exception if main config is missing or malformed
-    web_config = json.load(open(web_config_file,'r'))
+    # be sure to give exception immediately if web config is missing or malformed
+    self.web_config = json.load(open(web_config_file,'r'), object_pairs_hook=OrderedDict)
     # instantiate http server
     self.web = RPiHTTPServer(web_config_file, WebHandler)
-
-    # quick access to config params
-    self.config = self.web.server.config
 
     # parse drone config file
     self.drone_config = {}
     
     if os.path.isfile(drone_config_file):
       try:
-        self.drone_config = json.load(open(drone_config_file,'r'))
+        self.drone_config = json.load(open(drone_config_file,'r'), object_pairs_hook=OrderedDict)
         # instantiate drone controller
         self.drone = Drone(self.drone_config, controller = self)
       except Exception as e:
@@ -50,7 +48,7 @@ class XTCD:
     
     if os.path.isfile(sensors_config_file):
       try:
-        self.sensors_config = json.load(open(sensors_config_file,'r'))
+        self.sensors_config = json.load(open(sensors_config_file,'r'), object_pairs_hook=OrderedDict)
         # instantiate sensors controller
         self.sensors = Sensors(self.sensors_config, controller = self) 
       except Exception as e:
@@ -66,7 +64,7 @@ class XTCD:
 
   # start the web server
   def start(self):
-    self.log("Server listening on http://%s:%s" % (self.config["SERVER_ADDRESS"],self.config["SERVER_PORT"]))
+    self.log("Server listening on http://%s:%s" % (self.web_config["SERVER_ADDRESS"],self.web_config["SERVER_PORT"]))
     # start the keep alive thread if needed
     if "KEEP_ALIVE" in self.drone_config:
       self.drone.keep_alive(self.drone_config["KEEP_ALIVE"]["MIN"])
@@ -89,9 +87,11 @@ if __name__ == '__main__':
   basedir = os.path.dirname(os.path.abspath(__file__))
   xtcd = XTCD(basedir)
 
+  # exit properly stopping motors, web server, etc..
   def handle_exit(*args):
     xtcd.stop()
 
+  # register exit function
   atexit.register(handle_exit)
   signal.signal(signal.SIGTERM, handle_exit)
   signal.signal(signal.SIGINT, handle_exit)

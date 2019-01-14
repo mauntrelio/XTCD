@@ -9,6 +9,7 @@ import time
 import threading
 import os
 import json
+# from collections import OrderedDict
 import pystache
 
 # class handling web requests
@@ -54,9 +55,9 @@ class WebHandler(RPiHTTPRequestHandler):
 
   # GET /config
   def show_config(self):
-    self.tpl_vars["WEB_CONFIG"] = json.dumps(self.config, indent = 4)
-    self.tpl_vars["DRONE_CONFIG"] = json.dumps(self.server.controller.drone.config, indent = 4)
-    self.tpl_vars["SENSORS_CONFIG"] = json.dumps(self.server.controller.sensors.config, indent = 4)
+    self.tpl_vars["WEB_CONFIG"] = json.dumps(self.server.controller.web_config, indent = 2)
+    self.tpl_vars["DRONE_CONFIG"] = json.dumps(self.server.controller.drone.config, indent = 2)
+    self.tpl_vars["SENSORS_CONFIG"] = json.dumps(self.server.controller.sensors.config, indent = 2)
     self.render_template(template="config.html")
 
   # GET /sensor?id=sensor_id
