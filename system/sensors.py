@@ -107,8 +107,8 @@ class Sensors:
           value *= params["multiplier"]
 
     except Exception as e:
-      self.controller.log("Error reading sensor %s" % sensor_id)
-      self.controller.log(traceback.format_exc())
+      self.controller.log("Error reading sensor %s" % sensor_id, severity = 40)
+      self.controller.log(traceback.format_exc(), severity = 40)
       value = None  
 
     if sensor["type"] == "float":

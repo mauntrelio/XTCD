@@ -50,7 +50,7 @@ class Drone:
       elif motor["TYPE"] == "L298N":
          self.MOTORS[motor["ID"]] = DCMotor_L298N(motor, self)
       else:
-        self.log("Motor id %s: unknown type (%s)" % (motor["ID"], motor["TYPE"]))
+        self.log("Motor id %s: unknown type (%s)" % (motor["ID"], motor["TYPE"]), severity = 40)
 
     # set pwm relays OFF
     for i in xrange(len(self.RELAYS)):
@@ -220,14 +220,11 @@ class Drone:
 
       threading.Timer(self.KEEP_ALIVE["INTERVAL"], self.keep_alive, [position]).start()  
 
-  # to be called at exit
   def shutdown(self):
+  # to be called at exit
     self.stop_all()
     time.sleep(1)
     GPIO.cleanup()
-
-  def log(self, message):
-    self.controller.log(message)
 
   # example callback to GPIO event
   def button_press(self, pin):
@@ -239,3 +236,6 @@ class Drone:
       self.center()
       self.stop_all()
       self.switch_off(19)
+
+  def log(self, message, severity = 20):
+    self.controller.log(message, severity)

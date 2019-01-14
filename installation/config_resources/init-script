@@ -30,7 +30,7 @@ do_start () {
 	log_daemon_msg "Starting system $DAEMON_NAME daemon"
 	start-stop-daemon --start --background --pidfile $PIDFILE \
 	--make-pidfile --user $DAEMON_USER --chuid $DAEMON_USER \
-	--startas /bin/bash -- -c "exec $DAEMON >> $DIR/logs/xtcd.log 2>&1"
+	--startas $DAEMON
 	log_end_msg $?
 }
 do_stop () {
