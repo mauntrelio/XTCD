@@ -205,7 +205,7 @@ class Drone:
   # stop ALL motors
   def stop_all(self):
     for motor_id in self.MOTORS:
-      threading.Thread(target=self.MOTORS[motor_id].stop).start()
+      self.MOTORS[motor_id].stop()
 
   # move a servo to keep pwm board alive (prevent powebank poweroff)
   def keep_alive(self, position):
@@ -223,6 +223,7 @@ class Drone:
   # to be called at exit
   def shutdown(self):
     self.stop_all()
+    time.sleep(1)
     GPIO.cleanup()
 
   def log(self, message):
@@ -233,8 +234,8 @@ class Drone:
     # determine if button was pressed
     value = GPIO.input(pin)
     if value == GPIO.LOW:
-      self.controller.log("GPIO input %s was set to LOW" % pin)
-      # stop motor, center camera, switch on light
+      self.log("GPIO input %s was set to LOW" % pin)
+      # stop all motors, center camera, switch off light
       self.center()
       self.stop_all()
       self.switch_off(19)
