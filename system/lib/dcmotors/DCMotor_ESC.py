@@ -63,7 +63,7 @@ class DCMotor_ESC:
     self.go("B")
 
   def stop(self):
-    self.controller.log("%s: stopping!" % self.id)
+    self.controller.log("%s: stopping" % self.id)
     self.go("N")
 
   def speedup(self):
