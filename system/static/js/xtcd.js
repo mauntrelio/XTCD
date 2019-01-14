@@ -42,8 +42,9 @@ var XTCD = (function($,window,document,undefined) {
       if ($this.data("keys")) {
         var keys = $this.data("keys").split(",");
         var command = $this.data("command");
+        var callback = $this.data("callback");
         keys.forEach(function(key){
-          mapping[key] = { command: command, data: element.dataset };
+          mapping[key] = { command: command,  callback: callback, data: element.dataset };
         });
       }
     });
@@ -55,7 +56,12 @@ var XTCD = (function($,window,document,undefined) {
         if (!(targetElement.tagName == "TEXTAREA") && !(targetElement.tagName == "INPUT")){
           e.preventDefault();
         };
-        $.post("/" + event.command, event.data, XTCD.update_view);
+        if (event.command) {
+          $.post("/" + event.command, event.data, XTCD.update_view);
+        }
+        if (event.callback) {
+          XTCD[event.callback]();
+        }
       }
 	  });
   };
