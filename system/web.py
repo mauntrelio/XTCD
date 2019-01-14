@@ -9,7 +9,6 @@ import time
 import threading
 import os
 import json
-# from collections import OrderedDict
 import pystache
 
 # class handling web requests

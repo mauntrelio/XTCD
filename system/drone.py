@@ -90,9 +90,6 @@ class Drone:
     self.status["AZIMUTH"] = config["AZIMUTH"]["NEUTRAL"]
     self.status["ALTITUDE"] = config["ALTITUDE"]["NEUTRAL"]
 
-  def set_gpio_output(self, pin):
-    GPIO.setup(pin,GPIO.OUT)
-
   # generic set pwm method 
   # please note that this method completely bypass any check
   # and it does not update the 

@@ -117,8 +117,11 @@ if __name__ == '__main__':
 
   # exit properly stopping motors, web server, etc..
   def handle_exit(*args):
-    xtcd.stop()
-
+    try:
+      xtcd.stop()
+    except:
+      pass
+      
   # register exit function
   atexit.register(handle_exit)
   signal.signal(signal.SIGTERM, handle_exit)
