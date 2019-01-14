@@ -54,8 +54,8 @@ class WebHandler(RPiHTTPRequestHandler):
   # GET /config
   def show_config(self):
     self.tpl_vars["WEB_CONFIG"] = json.dumps(self.config, indent = 4)
-    self.tpl_vars["DRONE_CONFIG"] = json.dumps(self.server.drone.config, indent = 4)
-    self.tpl_vars["SENSORS_CONFIG"] = json.dumps(self.server.sensors.config, indent = 4)
+    self.tpl_vars["DRONE_CONFIG"] = json.dumps(self.server.controller.drone.config, indent = 4)
+    self.tpl_vars["SENSORS_CONFIG"] = json.dumps(self.server.controller.sensors.config, indent = 4)
     self.render_template(template="config.html")
 
   # GET /sensor?id=sensor_id
