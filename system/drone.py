@@ -26,6 +26,8 @@ class Drone:
     self.MOTORS = {}
     self.RELAYS = config["RELAYS"] if "RELAYS" in config else []
     self.KEEP_ALIVE = config["KEEP_ALIVE"] if "KEEP_ALIVE" in config else False
+    
+    # self.GPIO = GPIO # we set this to give access to the GPIO from
     self.GPIO_IN = {}
     self.GPIO_OUT = {}
 
@@ -34,6 +36,10 @@ class Drone:
     # instantiate and initialize pwm controller
     self.pwm = pca9685(address=int(config["I2C_ADDR"],16))
     self.pwm.set_pwm_freq(config["FREQUENCY"])
+
+    # start up GPIO
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
 
     # instantiate motors controllers
     for motor in config["MOTORS"]:
@@ -45,10 +51,6 @@ class Drone:
          self.MOTORS[motor["ID"]] = DCMotor_L298N(motor, self)
       else:
         self.log("Motor id %s: unknown type (%s)" % (motor["ID"], motor["TYPE"]))
-
-    # start up GPIO
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
 
     # set pwm relays OFF
     for i in xrange(len(self.RELAYS)):
@@ -82,12 +84,14 @@ class Drone:
           # Callback itself should determine which one is the case
           GPIO.add_event_detect(gpio["PIN"], GPIO.BOTH, callback=getattr(self, gpio["CALLBACK"]), bouncetime=gpio["BOUNCE"])
 
-
     # center camera
     self.set_pwm(channel = config["AZIMUTH"]["CHANNEL"], value = config["AZIMUTH"]["NEUTRAL"])
     self.set_pwm(channel = config["ALTITUDE"]["CHANNEL"], value = config["ALTITUDE"]["NEUTRAL"])
     self.status["AZIMUTH"] = config["AZIMUTH"]["NEUTRAL"]
     self.status["ALTITUDE"] = config["ALTITUDE"]["NEUTRAL"]
+
+  def set_gpio_output(self, pin):
+    GPIO.setup(pin,GPIO.OUT)
 
   # generic set pwm method 
   # please note that this method completely bypass any check
@@ -175,40 +179,33 @@ class Drone:
     # forward operation may require some delay: manage operation in one single thread per motor
     for motor_id in motor_ids:
       threading.Thread(target=self.MOTORS[motor_id].forward).start()
-      # self.MOTORS[motor_id].forward()
 
   # start moving one or more motors backward
   def back(self, *motor_ids):
     # backward operation may require some delay: manage operation in one single thread per motor
     for motor_id in motor_ids:
       threading.Thread(target=self.MOTORS[motor_id].back).start()
-      # self.MOTORS[motor_id].back()
 
   # Stop one or more motors
   def stop(self, *motor_ids):
     # put motors to stop position
     for motor_id in motor_ids:
       threading.Thread(target=self.MOTORS[motor_id].stop).start()
-      # self.MOTORS[motor_id].stop()
     
   # Speed up
   def speedup(self, *motor_ids):
     for motor_id in motor_ids:
       threading.Thread(target=self.MOTORS[motor_id].speedup).start()
-      # self.MOTORS[motor_id].speedup()
 
   # Slow down
   def slowdown(self, *motor_ids):
     for motor_id in motor_ids:
       threading.Thread(target=self.MOTORS[motor_id].slowdown).start()
-      # self.MOTORS[motor_id].slowdown()
 
-  # stop ALL motors and clean up GPIO
+  # stop ALL motors
   def stop_all(self):
     for motor_id in self.MOTORS:
       threading.Thread(target=self.MOTORS[motor_id].stop).start()
-      # self.MOTORS[motor_id].stop()
-    GPIO.cleanup()
 
   # move a servo to keep pwm board alive (prevent powebank poweroff)
   def keep_alive(self, position):
@@ -223,6 +220,11 @@ class Drone:
 
       threading.Timer(self.KEEP_ALIVE["INTERVAL"], self.keep_alive, [position]).start()  
 
+  # to be called at exit
+  def shutdown(self):
+    self.stop_all()
+    GPIO.cleanup()
+
   def log(self, message):
     self.controller.log(message)
 
@@ -234,5 +236,5 @@ class Drone:
       self.controller.log("GPIO input %s was set to LOW" % pin)
       # stop motor, center camera, switch on light
       self.center()
-      self.stop()
+      self.stop_all()
       self.switch_off(19)

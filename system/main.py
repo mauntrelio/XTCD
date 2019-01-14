@@ -9,6 +9,7 @@ import threading
 import time
 import os
 import json
+import traceback
 
 
 # class coordinating the components:
@@ -41,7 +42,7 @@ class XTCD:
         self.drone = Drone(self.drone_config, controller = self)
       except Exception as e:
         self.log("Error parsing drone configuration file")
-        self.log(str(e))
+        self.log(traceback.format_exc())
 
     # parse drone config file
     self.sensors_config = {}
@@ -53,7 +54,7 @@ class XTCD:
         self.sensors = Sensors(self.sensors_config, controller = self) 
       except Exception as e:
         self.log("Error parsing sensors configuration file")
-        self.log(str(e))
+        self.log(traceback.format_exc())
 
     # pass data to web server
     self.web.server.controller = self
@@ -73,7 +74,7 @@ class XTCD:
   # stop everything 
   def stop(self):
     # stop the drone
-    self.drone.stop_all()
+    self.drone.shutdown()
     # stop the web server
     self.web.server.server_close()
 
@@ -92,4 +93,3 @@ if __name__ == '__main__':
   except KeyboardInterrupt:
     pass
     xtcd.stop()
-
