@@ -20,10 +20,11 @@ mv *.img raspbian.img
 - Mount the image (it's an image of two partion, so you need losetup):
 
 ```bash
-losetup -P /dev/loop0 raspbian.img
+loopdevice=`losetup -f`
+losetup -P $loopdevice raspbian.img
 mkdir -p /mnt/raspimg
-mount /dev/loop0p2 /mnt/raspimg
-mount /dev/loop0p1 /mnt/raspimg/boot
+mount "$loopdevice"p2 /mnt/raspimg
+mount "$loopdevice"p1 /mnt/raspimg/boot
 ```
 
 The previous commands are supposed to be run as root (or with sudo)
@@ -119,7 +120,7 @@ The following command is referred to the current directory (XTCD/docs)
 ```bash
 umount /mnt/raspimg/boot
 umount /mnt/raspimg
-losetup -D
+losetup -d $loopdevice
 dd if=/tmp/raspi/raspbian.img of=/dev/sdX bs=4M conv=fsync status=progress
 ```
 
