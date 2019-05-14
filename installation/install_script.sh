@@ -6,6 +6,7 @@ apt-get -y upgrade
 
 # Install needed Python libraries
 
+apt-get -y install python-smbus
 apt-get -y install python-pip
 
 pip install RPiHTTPServer
