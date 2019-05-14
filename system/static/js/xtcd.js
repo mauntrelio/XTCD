@@ -42,8 +42,9 @@ var XTCD = (function($,window,document,undefined) {
       if ($this.data("keys")) {
         var keys = $this.data("keys").split(",");
         var command = $this.data("command");
+        var callback = $this.data("callback");
         keys.forEach(function(key){
-          mapping[key] = { command: command, data: element.dataset };
+          mapping[key] = { command: command,  callback: callback, data: element.dataset };
         });
       }
     });
@@ -51,11 +52,16 @@ var XTCD = (function($,window,document,undefined) {
     document.addEventListener("keydown", function(e) {
       var targetElement = e.target || e.srcElement;
       var event = (mapping[e.code]) ? mapping[e.code] : mapping[e.key];
-      if (!(targetElement.tagName == "TEXTAREA") && !(targetElement.tagName == "INPUT")){
-        e.preventDefault();
-      };
       if (event) {
-        $.post("/" + event.command, event.data, XTCD.update_view);
+        if (!(targetElement.tagName == "TEXTAREA") && !(targetElement.tagName == "INPUT")){
+          e.preventDefault();
+        };
+        if (event.command) {
+          $.post("/" + event.command, event.data, XTCD.update_view);
+        }
+        if (event.callback) {
+          XTCD[event.callback]();
+        }
       }
 	  });
   };

@@ -109,25 +109,25 @@
           </tr>
           <tr>
             <td>
-              <button type="button" class="btn btn-success btn-sm drone-control" data-command="forward" title="Go back" data-keys="b,B">
+              <button type="button" class="btn btn-success btn-sm drone-control" data-command="back" data-params="MOTOR_1,MOTOR_2,MOTOR_3" title="Go back" data-keys="b,B">
                 <span class="glyphicon glyphicon-triangle-left"></span>
               </button>
             </td>
             <td>
-              <button type="button" class="btn btn-success btn-sm drone-control" data-command="back" title="Go forward" data-keys="f,F">
+              <button type="button" class="btn btn-success btn-sm drone-control" data-command="forward" title="Go forward" data-keys="f,F" data-params="MOTOR_1,MOTOR_2,MOTOR_3">
                 <span class="glyphicon glyphicon-triangle-right"></span>
               </button>
             </td>
-            <td><input type="button" value="STOP" class="btn btn-danger btn-sm drone-control" data-command="stop" data-keys="s,S"></td>
+            <td><input type="button" value="STOP" class="btn btn-danger btn-sm drone-control" data-command="stop" data-params="MOTOR_1,MOTOR_2,MOTOR_3" data-keys="s,S"></td>
           </tr>
           <tr>
             <td>
-              <button type="button" class="btn btn-default btn-sm drone-control" data-command="slowdown" title="Slow down" data-keys="-">
+              <button type="button" class="btn btn-default btn-sm drone-control" data-command="slowdown" title="Slow down" data-keys="-" data-params="MOTOR_1,MOTOR_2,MOTOR_3">
                 <span class="glyphicon glyphicon-minus"></span>
               </button>
             </td>
             <td>
-              <button type="button" class="btn btn-default btn-sm drone-control" data-command="speedup" title="Speed up" data-keys="+">
+              <button type="button" class="btn btn-default btn-sm drone-control" data-command="speedup" title="Speed up" data-keys="+" data-params="MOTOR_1,MOTOR_2,MOTOR_3">
                 <span class="glyphicon glyphicon-plus"></span>
               </button>
             </td>
@@ -159,10 +159,6 @@
           <tr>
             <td><b>Battery 2</b></td>
             <td class="diagnostic" data-sensor-id="battery_2">N/A</td>
-          </tr>  
-          <tr>
-            <td><b>Battery 3</b></td>
-            <td class="diagnostic" data-sensor-id="battery_3">N/A</td>
           </tr>  
         </table>
       </div>
