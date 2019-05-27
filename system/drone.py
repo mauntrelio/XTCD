@@ -234,5 +234,31 @@ class Drone:
       self.stop_all()
       self.switch_off(19)
 
+
+  def stop_motor_lock(self, reading, expected, motor, direction):
+    if reading == expected and self.MOTORS[motor].direction == direction:
+      self.log("STOPPING %s" % motor)
+      self.MOTORS[motor].stop()
+
+  def stop_motor_locking_1(self, pin):
+    value = GPIO.input(pin)
+    self.log("GPIO input %s was set to LOW" % pin)
+    stop_motor_lock(value, GPIO.LOW, "MOTOR_LOCK_1", "F")
+
+  def stop_motor_unlocking_1(self, pin):
+    value = GPIO.input(pin)
+    self.log("GPIO input %s was set to LOW" % pin)
+    stop_motor_lock(value, GPIO.LOW, "MOTOR_LOCK_1", "B")
+
+  def stop_motor_locking_2(self, pin):
+    value = GPIO.input(pin)
+    self.log("GPIO input %s was set to LOW" % pin)
+    stop_motor_lock(value, GPIO.LOW, "MOTOR_LOCK_2", "F")
+
+  def stop_motor_locking_2(self, pin):
+    value = GPIO.input(pin)
+    self.log("GPIO input %s was set to LOW" % pin)
+    stop_motor_lock(value, GPIO.LOW, "MOTOR_LOCK_2", "B")
+
   def log(self, message, severity = 20):
     self.controller.log(message, severity)

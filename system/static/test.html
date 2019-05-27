@@ -13,11 +13,24 @@
     <div class="row">
       <div class="col-md-12">
 
-        <h2>Useful buttons</h2>
+        <h2>Lock mechanism</h2>
 
-          <button type="submit" class="btn btn-success drone-control" data-command="sequence_pwm"
-          data-params="6,4095,0|7,0,0|8,4095,0|9,4095,0|10,4095,0|11,0,0|4,370,1000|3,530,3000|4,370,1000|4,395,30000|4,370,5000|3,445,0">DST
-          Approach</button>
+          <button type="submit" class="btn btn-success drone-control" data-command="forward"
+          data-params="MOTOR_LOCK_1">Lock motor 1 forward</button>
+
+          <button type="submit" class="btn btn-success drone-control" data-command="forward"
+          data-params="MOTOR_LOCK_2">Lock motor 2 forward</button>
+
+          <button type="submit" class="btn btn-success drone-control" data-command="back"
+          data-params="MOTOR_LOCK_1">Lock motor 1 backward</button>
+
+          <button type="submit" class="btn btn-success drone-control" data-command="back"
+          data-params="MOTOR_LOCK_2">Lock motor 2 backward</button>
+
+          <button type="submit" class="btn btn-danger drone-control" data-command="stop"
+          data-params="MOTOR_LOCK_1,MOTOR_LOCK_2">STOP</button>
+
+
 
   		</div>
 		</div>
