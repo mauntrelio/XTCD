@@ -261,5 +261,5 @@ class WebHandler(RPiHTTPRequestHandler):
 
   # override default logging
   def log_message(self, format, *args):
-    self.server.controller.log("%s %s" % (self.address_string(),format%args), severity = 20)
+    self.server.controller.log("%s %s" % (self.client_address[0],format%args), severity = 20)
     
