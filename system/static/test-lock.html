@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Test buttons</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+  </head>
+  <body>
+    <div class="container">
+
+    <div class="row">
+      <div class="col-md-12">
+
+        <h2>Lock mechanism</h2>
+
+          <button type="submit" class="btn btn-success drone-control" data-command="forward"
+          data-params="MOTOR_LOCK_1">Lock motor 1 forward</button>
+
+          <button type="submit" class="btn btn-success drone-control" data-command="forward"
+          data-params="MOTOR_LOCK_2">Lock motor 2 forward</button>
+
+          <button type="submit" class="btn btn-success drone-control" data-command="back"
+          data-params="MOTOR_LOCK_1">Lock motor 1 backward</button>
+
+          <button type="submit" class="btn btn-success drone-control" data-command="back"
+          data-params="MOTOR_LOCK_2">Lock motor 2 backward</button>
+
+          <button type="submit" class="btn btn-danger drone-control" data-command="stop"
+          data-params="MOTOR_LOCK_1,MOTOR_LOCK_2">STOP</button>
+
+
+
+  		</div>
+		</div>
+  
+    <div class="row"></div>
+
+	</div>
+
+  <script src="/static/js/jquery-3.2.1.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+  <script src="/static/js/xtcd.js"></script>
+  <script src="/static/js/app.js"></script>
+
+  </body>
+</html>
