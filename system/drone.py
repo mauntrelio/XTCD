@@ -242,22 +242,22 @@ class Drone:
 
   def stop_motor_locking_1(self, pin):
     value = GPIO.input(pin)
-    self.log("GPIO input %s was set to LOW" % pin)
+    self.log("GPIO input %s was set to %s" % (pin, value))
     self.stop_motor_lock(value, GPIO.LOW, "MOTOR_LOCK_1", "F")
 
   def stop_motor_unlocking_1(self, pin):
     value = GPIO.input(pin)
-    self.log("GPIO input %s was set to LOW" % pin)
+    self.log("GPIO input %s was set to %s" % (pin, value))
     self.stop_motor_lock(value, GPIO.LOW, "MOTOR_LOCK_1", "B")
 
   def stop_motor_locking_2(self, pin):
     value = GPIO.input(pin)
-    self.log("GPIO input %s was set to LOW" % pin)
+    self.log("GPIO input %s was set to %s" % (pin, value))
     self.stop_motor_lock(value, GPIO.LOW, "MOTOR_LOCK_2", "F")
 
   def stop_motor_locking_2(self, pin):
     value = GPIO.input(pin)
-    self.log("GPIO input %s was set to LOW" % pin)
+    self.log("GPIO input %s was set to %s" % (pin,value)
     self.stop_motor_lock(value, GPIO.LOW, "MOTOR_LOCK_2", "B")
 
   def log(self, message, severity = 20):
